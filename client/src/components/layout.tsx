@@ -57,7 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Footer */}
       <footer className="bg-white border-t border-border py-6 mt-auto">
         <div className="container mx-auto px-6 text-center text-muted-foreground text-xs">
-          <p>© {new Date().getFullYear()} TU Dublin Programme Team. Prototype.</p>
+          <p>© {new Date().getFullYear()} Ferns Prototype</p>
         </div>
       </footer>
     </div>
