@@ -1,29 +1,37 @@
 import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { AppProvider } from "./lib/store";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import Layout from "@/components/layout";
+import Home from "@/pages/Home";
+import ProgrammeForm from "@/pages/ProgrammeForm";
+import Modules from "@/pages/Modules";
+import Assessments from "@/pages/Assessments";
+import Visualisations from "@/pages/Visualisations";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <Switch>
-      {/* Add pages below */}
-      {/* <Route path="/" component={Home}/> */}
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
+    <Layout>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/programme" component={ProgrammeForm} />
+        <Route path="/modules" component={Modules} />
+        <Route path="/assessments" component={Assessments} />
+        <Route path="/visualisations" component={Visualisations} />
+        <Route path="/visual/triangle" component={Visualisations} /> {/* Alias for direct link compatibility */}
+        <Route path="/visual/heatmap" component={Visualisations} />  {/* Alias for direct link compatibility */}
+        <Route component={NotFound} />
+      </Switch>
+    </Layout>
   );
 }
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <AppProvider>
+      <Toaster />
+      <Router />
+    </AppProvider>
   );
 }
 
