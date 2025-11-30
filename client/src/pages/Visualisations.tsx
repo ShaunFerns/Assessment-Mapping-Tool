@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import VisualTriangle from "@/components/VisualTriangle";
 import VisualHeatmap from "@/components/VisualHeatmap";
+import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -84,7 +85,7 @@ export default function Visualisations() {
 
       <div ref={printRef} className="bg-[hsl(210,20%,97%)] p-4 -m-4 rounded-xl">
         <Tabs defaultValue="triangle" className="w-full space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2 bg-primary/5 p-1 rounded-full">
+          <TabsList className="grid w-full max-w-xl grid-cols-3 bg-primary/5 p-1 rounded-full">
             <TabsTrigger 
               value="triangle" 
               className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
@@ -96,6 +97,12 @@ export default function Visualisations() {
               className="rounded-full data-[state=active]:bg-secondary data-[state=active]:text-white"
             >
               Assessment Heatmap
+            </TabsTrigger>
+            <TabsTrigger 
+              value="analytics" 
+              className="rounded-full data-[state=active]:bg-accent-purple data-[state=active]:text-white"
+            >
+              Analytics Dashboard
             </TabsTrigger>
           </TabsList>
 
@@ -119,6 +126,18 @@ export default function Visualisations() {
               </CardHeader>
               <CardContent className="px-0">
                 <VisualHeatmap />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="animate-in fade-in duration-500">
+            <Card className="border-none shadow-none bg-transparent">
+               <CardHeader className="px-0">
+                <CardTitle className="text-xl font-heading text-primary">Programme Analytics</CardTitle>
+                <CardDescription>Data-driven insights into assessment balance and coverage.</CardDescription>
+              </CardHeader>
+              <CardContent className="px-0">
+                <AnalyticsDashboard />
               </CardContent>
             </Card>
           </TabsContent>

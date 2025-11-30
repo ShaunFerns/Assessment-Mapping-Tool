@@ -20,6 +20,7 @@ function Router() {
         <Route path="/visualisations" component={Visualisations} />
         <Route path="/visual/triangle" component={Visualisations} /> {/* Alias for direct link compatibility */}
         <Route path="/visual/heatmap" component={Visualisations} />  {/* Alias for direct link compatibility */}
+        <Route path="/visual/analytics" component={Visualisations} /> {/* Alias for direct link compatibility */}
         <Route component={NotFound} />
       </Switch>
     </Layout>
