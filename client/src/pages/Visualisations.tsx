@@ -13,7 +13,23 @@ export default function Visualisations() {
   const handlePrint = async () => {
     if (printRef.current) {
       try {
-        const dataUrl = await toPng(printRef.current, { cacheBust: true });
+        // Find the scrollable container to ensure we capture the full width
+        const scrollableContent = printRef.current.querySelector('.overflow-x-auto');
+        const contentWidth = scrollableContent ? scrollableContent.scrollWidth : printRef.current.scrollWidth;
+        
+        // Use the larger of the current container width or the content width
+        // Add a bit of padding to ensure borders aren't cut off
+        const width = Math.max(printRef.current.offsetWidth, contentWidth + 40);
+
+        const dataUrl = await toPng(printRef.current, { 
+            cacheBust: true,
+            width: width,
+            style: {
+                width: `${width}px`,
+                maxWidth: 'none',
+                height: 'auto'
+            }
+        });
         const link = document.createElement("a");
         link.href = dataUrl;
         link.download = "assessment-map.png";
