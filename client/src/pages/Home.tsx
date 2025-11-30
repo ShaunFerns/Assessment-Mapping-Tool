@@ -19,9 +19,6 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-transparent" />
         
         <div className="relative z-10 container px-12 py-12 max-w-3xl">
-          <div className="inline-block px-3 py-1 rounded-full bg-secondary/20 border border-secondary/30 text-secondary-foreground text-xs font-bold tracking-wide mb-6 backdrop-blur-sm">
-            TU DUBLIN ACADEMIC TOOLS
-          </div>
           <h1 className="text-5xl font-heading font-bold leading-tight mb-6">
             Assessment Mapping & Visualization
           </h1>

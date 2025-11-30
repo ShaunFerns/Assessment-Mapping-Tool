@@ -19,10 +19,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <header className="bg-primary text-primary-foreground shadow-md z-10">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             {/* Simple TU Dublin Logo Placeholder */}
-            <div className="w-8 h-8 bg-secondary rounded-sm flex items-center justify-center font-bold text-white text-xs">
-              TUD
-            </div>
             <h1 className="font-heading font-bold text-lg tracking-tight hidden sm:block">
               Assessment Mapping Tool
             </h1>
