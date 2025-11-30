@@ -13,23 +13,47 @@ export default function Visualisations() {
   const handlePrint = async () => {
     if (printRef.current) {
       try {
-        // Find the scrollable container to ensure we capture the full width
+        // Calculate the full width required
         const scrollableContent = printRef.current.querySelector('.overflow-x-auto');
-        const contentWidth = scrollableContent ? scrollableContent.scrollWidth : printRef.current.scrollWidth;
-        
-        // Use the larger of the current container width or the content width
-        // Add a bit of padding to ensure borders aren't cut off
-        const width = Math.max(printRef.current.offsetWidth, contentWidth + 40);
+        const fullWidth = scrollableContent ? scrollableContent.scrollWidth : printRef.current.scrollWidth;
+        // Add some padding
+        const printWidth = fullWidth + 60;
 
-        const dataUrl = await toPng(printRef.current, { 
-            cacheBust: true,
-            width: width,
-            style: {
-                width: `${width}px`,
-                maxWidth: 'none',
-                height: 'auto'
-            }
+        // Clone the node to modify it for printing without affecting the UI
+        const clone = printRef.current.cloneNode(true) as HTMLElement;
+        
+        // Style the clone to sit off-screen but be fully expanded
+        clone.style.position = 'fixed'; // fixed to viewport to avoid scroll issues
+        clone.style.top = '-10000px';
+        clone.style.left = '0';
+        clone.style.width = `${printWidth}px`;
+        clone.style.height = 'auto';
+        clone.style.zIndex = '-1000';
+        clone.style.overflow = 'visible';
+        clone.style.backgroundColor = 'hsl(210, 20%, 97%)'; // Ensure background color is preserved
+
+        // Find internal scrollable containers and force them to show all content
+        const scrollables = clone.querySelectorAll('.overflow-x-auto');
+        scrollables.forEach((el) => {
+          (el as HTMLElement).style.overflow = 'visible';
+          (el as HTMLElement).style.width = '100%'; // Fill the expanded parent
+          (el as HTMLElement).style.maxWidth = 'none';
         });
+
+        // Append to body so it renders layout
+        document.body.appendChild(clone);
+
+        // Capture the clone
+        const dataUrl = await toPng(clone, { 
+            cacheBust: true,
+            width: printWidth,
+            height: clone.offsetHeight,
+            backgroundColor: 'hsl(210, 20%, 97%)'
+        });
+
+        // Clean up
+        document.body.removeChild(clone);
+
         const link = document.createElement("a");
         link.href = dataUrl;
         link.download = "assessment-map.png";
