@@ -5,19 +5,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Printer } from "lucide-react";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 
 export default function Visualisations() {
   const printRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = async () => {
     if (printRef.current) {
-      const canvas = await html2canvas(printRef.current);
-      const image = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.href = image;
-      link.download = "assessment-map.png";
-      link.click();
+      try {
+        const dataUrl = await toPng(printRef.current, { cacheBust: true });
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "assessment-map.png";
+        link.click();
+      } catch (err) {
+        console.error("Failed to print map:", err);
+      }
     }
   };
 

@@ -30,8 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               const Icon = item.icon;
               
               return (
-                <Link key={item.href} href={item.href}>
-                  <a className={cn(
+                <Link key={item.href} href={item.href} className={cn(
                     "px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2",
                     isActive 
                       ? "bg-secondary text-white shadow-sm" 
@@ -39,7 +38,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   )}>
                     <Icon size={16} />
                     <span className="hidden md:inline">{item.label}</span>
-                  </a>
                 </Link>
               );
             })}
