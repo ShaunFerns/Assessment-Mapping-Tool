@@ -17,7 +17,7 @@ const formSchema = z.object({
   moduleId: z.coerce.number().min(1, "Select a module"),
   week: z.coerce.number().min(1),
   weight: z.coerce.number().min(0).max(100),
-  atype: z.enum(['Delivery', 'Presentation', 'Exam', 'Report', 'Case Study']),
+  atype: z.string(), // Allow any string to support new types easily without enum strictness in Zod for now
   mode: z.enum(['Group', 'Individual']),
   plo: z.string().optional(),
   mlo: z.string().optional(),
@@ -33,7 +33,7 @@ export default function Assessments() {
     defaultValues: {
       week: 1,
       weight: 20,
-      atype: 'Report',
+      atype: 'Written report',
       mode: 'Individual',
       plo: '',
       mlo: '',
@@ -53,7 +53,7 @@ export default function Assessments() {
         moduleId: values.moduleId,
         week: values.week,
         weight: 20,
-        atype: 'Report',
+        atype: 'Written report',
         mode: 'Individual',
         plo: '', 
         mlo: '', 
@@ -142,7 +142,23 @@ export default function Assessments() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {['Delivery', 'Presentation', 'Exam', 'Report', 'Case Study'].map(t => (
+                          {[
+                            'Artifact',
+                            'Case analysis',
+                            'Code submission',
+                            'Essay',
+                            'Lab notebook',
+                            'Portfolio',
+                            'Poster',
+                            'Presentation slides',
+                            'Product demonstration',
+                            'Prototype',
+                            'Reflective journal',
+                            'Studio output',
+                            'Thesis / dissertation document',
+                            'Video recording',
+                            'Written report'
+                          ].map(t => (
                             <SelectItem key={t} value={t}>{t}</SelectItem>
                           ))}
                         </SelectContent>

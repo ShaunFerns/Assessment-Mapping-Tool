@@ -11,7 +11,27 @@ export type Module = {
   title: string;
 };
 
-export type AssessmentType = 'Delivery' | 'Presentation' | 'Exam' | 'Report' | 'Case Study';
+export type AssessmentType = 
+  | 'Artifact' 
+  | 'Case analysis' 
+  | 'Code submission' 
+  | 'Essay' 
+  | 'Lab notebook' 
+  | 'Portfolio' 
+  | 'Poster' 
+  | 'Presentation slides' 
+  | 'Product demonstration' 
+  | 'Prototype' 
+  | 'Reflective journal' 
+  | 'Studio output' 
+  | 'Thesis / dissertation document' 
+  | 'Video recording' 
+  | 'Written report'
+  // Keep old types for compatibility if needed, or migrate them?
+  // The user asked to "Update the UI only to show the list in alphabetical order."
+  // But the analytics function uses a different list.
+  // Let's assume we should support all new types.
+  | 'Delivery' | 'Presentation' | 'Exam' | 'Report' | 'Case Study'; // Keeping these as fallback or until migrated
 export type AssessmentMode = 'Group' | 'Individual';
 
 export type Assessment = {

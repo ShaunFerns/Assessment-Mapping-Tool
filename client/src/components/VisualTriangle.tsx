@@ -14,26 +14,60 @@ export default function VisualTriangle() {
 
   // Helper to get color class
   const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Delivery': return 'fill-[var(--color-delivery)] stroke-[var(--color-delivery)] text-[var(--color-delivery)]';
-      case 'Presentation': return 'fill-[var(--color-presentation)] stroke-[var(--color-presentation)] text-[var(--color-presentation)]';
-      case 'Exam': return 'fill-[var(--color-exam)] stroke-[var(--color-exam)] text-[var(--color-exam)]';
-      case 'Report': return 'fill-[var(--color-report)] stroke-[var(--color-report)] text-[var(--color-report)]';
-      case 'Case Study': return 'fill-[var(--color-casestudy)] stroke-[var(--color-casestudy)] text-[var(--color-casestudy)]';
-      default: return 'fill-gray-500 stroke-gray-500 text-gray-500';
-    }
+    const t = type.toLowerCase();
+    if (t === 'artifact') return 'fill-[var(--color-artifact)] stroke-[var(--color-artifact)] text-[var(--color-artifact)]';
+    if (t === 'case analysis') return 'fill-[var(--color-case-analysis)] stroke-[var(--color-case-analysis)] text-[var(--color-case-analysis)]';
+    if (t === 'code submission') return 'fill-[var(--color-code-submission)] stroke-[var(--color-code-submission)] text-[var(--color-code-submission)]';
+    if (t === 'essay') return 'fill-[var(--color-essay)] stroke-[var(--color-essay)] text-[var(--color-essay)]';
+    if (t === 'lab notebook') return 'fill-[var(--color-lab-notebook)] stroke-[var(--color-lab-notebook)] text-[var(--color-lab-notebook)]';
+    if (t === 'portfolio') return 'fill-[var(--color-portfolio)] stroke-[var(--color-portfolio)] text-[var(--color-portfolio)]';
+    if (t === 'poster') return 'fill-[var(--color-poster)] stroke-[var(--color-poster)] text-[var(--color-poster)]';
+    if (t === 'presentation slides') return 'fill-[var(--color-presentation-slides)] stroke-[var(--color-presentation-slides)] text-[var(--color-presentation-slides)]';
+    if (t === 'product demonstration') return 'fill-[var(--color-product-demonstration)] stroke-[var(--color-product-demonstration)] text-[var(--color-product-demonstration)]';
+    if (t === 'prototype') return 'fill-[var(--color-prototype)] stroke-[var(--color-prototype)] text-[var(--color-prototype)]';
+    if (t === 'reflective journal') return 'fill-[var(--color-reflective-journal)] stroke-[var(--color-reflective-journal)] text-[var(--color-reflective-journal)]';
+    if (t === 'studio output') return 'fill-[var(--color-studio-output)] stroke-[var(--color-studio-output)] text-[var(--color-studio-output)]';
+    if (t === 'thesis / dissertation document') return 'fill-[var(--color-thesis-dissertation-document)] stroke-[var(--color-thesis-dissertation-document)] text-[var(--color-thesis-dissertation-document)]';
+    if (t === 'video recording') return 'fill-[var(--color-video-recording)] stroke-[var(--color-video-recording)] text-[var(--color-video-recording)]';
+    if (t === 'written report') return 'fill-[var(--color-written-report)] stroke-[var(--color-written-report)] text-[var(--color-written-report)]';
+    
+    // Legacy fallbacks
+    if (t === 'delivery') return 'fill-[var(--color-delivery)] stroke-[var(--color-delivery)] text-[var(--color-delivery)]';
+    if (t === 'presentation') return 'fill-[var(--color-presentation)] stroke-[var(--color-presentation)] text-[var(--color-presentation)]';
+    if (t === 'exam') return 'fill-[var(--color-exam)] stroke-[var(--color-exam)] text-[var(--color-exam)]';
+    if (t === 'report') return 'fill-[var(--color-report)] stroke-[var(--color-report)] text-[var(--color-report)]';
+    if (t === 'case study') return 'fill-[var(--color-casestudy)] stroke-[var(--color-casestudy)] text-[var(--color-casestudy)]';
+    
+    return 'fill-gray-500 stroke-gray-500 text-gray-500';
   };
   
   // Helper for background circle color (solid)
   const getCircleColor = (type: string) => {
-     switch (type) {
-      case 'Delivery': return 'bg-[var(--color-delivery)]';
-      case 'Presentation': return 'bg-[var(--color-presentation)]';
-      case 'Exam': return 'bg-[var(--color-exam)]';
-      case 'Report': return 'bg-[var(--color-report)]';
-      case 'Case Study': return 'bg-[var(--color-casestudy)]';
-      default: return 'bg-gray-500';
-    }
+    const t = type.toLowerCase();
+    if (t === 'artifact') return 'bg-[var(--color-artifact)]';
+    if (t === 'case analysis') return 'bg-[var(--color-case-analysis)]';
+    if (t === 'code submission') return 'bg-[var(--color-code-submission)]';
+    if (t === 'essay') return 'bg-[var(--color-essay)]';
+    if (t === 'lab notebook') return 'bg-[var(--color-lab-notebook)]';
+    if (t === 'portfolio') return 'bg-[var(--color-portfolio)]';
+    if (t === 'poster') return 'bg-[var(--color-poster)]';
+    if (t === 'presentation slides') return 'bg-[var(--color-presentation-slides)]';
+    if (t === 'product demonstration') return 'bg-[var(--color-product-demonstration)]';
+    if (t === 'prototype') return 'bg-[var(--color-prototype)]';
+    if (t === 'reflective journal') return 'bg-[var(--color-reflective-journal)]';
+    if (t === 'studio output') return 'bg-[var(--color-studio-output)]';
+    if (t === 'thesis / dissertation document') return 'bg-[var(--color-thesis-dissertation-document)]';
+    if (t === 'video recording') return 'bg-[var(--color-video-recording)]';
+    if (t === 'written report') return 'bg-[var(--color-written-report)]';
+
+    // Legacy fallbacks
+    if (t === 'delivery') return 'bg-[var(--color-delivery)]';
+    if (t === 'presentation') return 'bg-[var(--color-presentation)]';
+    if (t === 'exam') return 'bg-[var(--color-exam)]';
+    if (t === 'report') return 'bg-[var(--color-report)]';
+    if (t === 'case study') return 'bg-[var(--color-casestudy)]';
+    
+    return 'bg-gray-500';
   };
 
   return (
@@ -131,9 +165,25 @@ export default function VisualTriangle() {
 
       {/* Legend */}
       <div className="mt-8 pt-6 border-t border-border flex flex-wrap gap-6 justify-center text-xs text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-primary">Assessment Types:</span>
-          {['Delivery', 'Presentation', 'Exam', 'Report', 'Case Study'].map(type => (
+        <div className="flex flex-wrap items-center gap-4 justify-center">
+          <span className="font-bold text-primary mr-2">Assessment Types:</span>
+          {[
+            'Artifact',
+            'Case analysis',
+            'Code submission',
+            'Essay',
+            'Lab notebook',
+            'Portfolio',
+            'Poster',
+            'Presentation slides',
+            'Product demonstration',
+            'Prototype',
+            'Reflective journal',
+            'Studio output',
+            'Thesis / dissertation document',
+            'Video recording',
+            'Written report'
+          ].map(type => (
              <div key={type} className="flex items-center gap-1.5">
                <div className={cn("w-3 h-3 rounded-full", getCircleColor(type))} />
                <span>{type}</span>

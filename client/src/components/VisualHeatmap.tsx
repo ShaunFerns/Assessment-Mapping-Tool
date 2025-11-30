@@ -14,14 +14,31 @@ export default function VisualHeatmap() {
 
   // Helper for block color
   const getBlockColor = (type: string) => {
-     switch (type) {
-      case 'Delivery': return 'bg-[var(--color-delivery)] text-white';
-      case 'Presentation': return 'bg-[var(--color-presentation)] text-white';
-      case 'Exam': return 'bg-[var(--color-exam)] text-white';
-      case 'Report': return 'bg-[var(--color-report)] text-black';
-      case 'Case Study': return 'bg-[var(--color-casestudy)] text-white';
-      default: return 'bg-gray-500 text-white';
-    }
+    const t = type.toLowerCase();
+    if (t === 'artifact') return 'bg-[var(--color-artifact)] text-white';
+    if (t === 'case analysis') return 'bg-[var(--color-case-analysis)] text-white';
+    if (t === 'code submission') return 'bg-[var(--color-code-submission)] text-white';
+    if (t === 'essay') return 'bg-[var(--color-essay)] text-white';
+    if (t === 'lab notebook') return 'bg-[var(--color-lab-notebook)] text-white';
+    if (t === 'portfolio') return 'bg-[var(--color-portfolio)] text-white';
+    if (t === 'poster') return 'bg-[var(--color-poster)] text-white';
+    if (t === 'presentation slides') return 'bg-[var(--color-presentation-slides)] text-white';
+    if (t === 'product demonstration') return 'bg-[var(--color-product-demonstration)] text-white';
+    if (t === 'prototype') return 'bg-[var(--color-prototype)] text-white';
+    if (t === 'reflective journal') return 'bg-[var(--color-reflective-journal)] text-white';
+    if (t === 'studio output') return 'bg-[var(--color-studio-output)] text-white';
+    if (t === 'thesis / dissertation document') return 'bg-[var(--color-thesis-dissertation-document)] text-white';
+    if (t === 'video recording') return 'bg-[var(--color-video-recording)] text-white';
+    if (t === 'written report') return 'bg-[var(--color-written-report)] text-black';
+
+    // Legacy
+    if (t === 'delivery') return 'bg-[var(--color-delivery)] text-white';
+    if (t === 'presentation') return 'bg-[var(--color-presentation)] text-white';
+    if (t === 'exam') return 'bg-[var(--color-exam)] text-white';
+    if (t === 'report') return 'bg-[var(--color-report)] text-black';
+    if (t === 'case study') return 'bg-[var(--color-casestudy)] text-white';
+    
+    return 'bg-gray-500 text-white';
   };
 
   return (
@@ -81,7 +98,23 @@ export default function VisualHeatmap() {
       
       {/* Legend */}
       <div className="mt-8 flex flex-wrap gap-4 justify-center text-xs text-muted-foreground">
-         {['Delivery', 'Presentation', 'Exam', 'Report', 'Case Study'].map(type => (
+         {[
+            'Artifact',
+            'Case analysis',
+            'Code submission',
+            'Essay',
+            'Lab notebook',
+            'Portfolio',
+            'Poster',
+            'Presentation slides',
+            'Product demonstration',
+            'Prototype',
+            'Reflective journal',
+            'Studio output',
+            'Thesis / dissertation document',
+            'Video recording',
+            'Written report'
+         ].map(type => (
              <div key={type} className="flex items-center gap-2">
                <div className={cn("w-4 h-4 rounded", getBlockColor(type))} />
                <span>{type}</span>

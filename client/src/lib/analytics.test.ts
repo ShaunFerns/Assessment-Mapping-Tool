@@ -21,15 +21,15 @@ describe('Analytics Core Logic', () => {
     ];
     assessments = [
       {
-        id: 1, moduleId: 1, week: 1, weight: 20, atype: "Delivery", mode: "Individual",
+        id: 1, moduleId: 1, week: 1, weight: 20, atype: "Artifact", mode: "Individual",
         plo: "PLO1", mlo: "MLO1", ga: "People"
       },
       {
-        id: 2, moduleId: 1, week: 3, weight: 30, atype: "Exam", mode: "Group",
+        id: 2, moduleId: 1, week: 3, weight: 30, atype: "Written report", mode: "Group",
         plo: "PLO2", mlo: "MLO2", ga: "Planet"
       },
       {
-        id: 3, moduleId: 2, week: 3, weight: 50, atype: "Report", mode: "Individual",
+        id: 3, moduleId: 2, week: 3, weight: 50, atype: "Written report", mode: "Individual",
         plo: "PLO1", mlo: "MLO3", ga: "Partnership"
       },
     ];
@@ -47,11 +47,10 @@ describe('Analytics Core Logic', () => {
     const typeMap: Record<string, number> = {};
     typeLabels.forEach((label, i) => typeMap[label] = typeValues[i]);
 
-    expect(typeMap["Delivery"]).toBe(20);
-    expect(typeMap["Exam"]).toBe(30);
-    expect(typeMap["Report"]).toBe(50);
-    expect(typeMap["Presentation"]).toBe(0);
-    expect(typeMap["Case Study"]).toBe(0);
+    expect(typeMap["Artifact"]).toBe(20);
+    expect(typeMap["Written report"]).toBe(80); // 30 + 50
+    expect(typeMap["Presentation slides"]).toBe(0);
+    expect(typeMap["Case analysis"]).toBe(0);
   });
 
   it('computes module profiles correctly', () => {
@@ -80,7 +79,7 @@ describe('Analytics Core Logic', () => {
 
   it('ignores out of range weeks', () => {
     assessments.push({
-        id: 4, moduleId: 1, week: 99, weight: 100, atype: "Exam", mode: "Individual",
+        id: 4, moduleId: 1, week: 99, weight: 100, atype: "Written report", mode: "Individual",
         plo: "PLO3", mlo: "MLO4", ga: "People"
     });
 

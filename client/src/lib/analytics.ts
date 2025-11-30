@@ -15,15 +15,48 @@ export function computeWeeklyLoad(programme: Programme, assessments: Assessment[
 }
 
 export function computeTypeDistribution(assessments: Assessment[]) {
-  const typeLabels = ["Delivery", "Presentation", "Exam", "Report", "Case Study"];
+  // Internal order as requested
+  const typeLabels = [
+    "Artifact",
+    "Written report",
+    "Presentation slides",
+    "Prototype",
+    "Portfolio",
+    "Code submission",
+    "Video recording",
+    "Poster",
+    "Reflective journal",
+    "Lab notebook",
+    "Case analysis",
+    "Product demonstration",
+    "Essay",
+    "Studio output",
+    "Thesis / dissertation document",
+  ];
   const typeMap: Record<string, number> = {};
   
   typeLabels.forEach(t => typeMap[t.toLowerCase()] = 0);
 
   assessments.forEach(a => {
     const key = (a.atype || "").toLowerCase();
-    if (key in typeMap) {
-      typeMap[key] += a.weight;
+    // Handle legacy types mapping if necessary, or just let them fall through if not in list?
+    // The prompt implies we are switching to this list.
+    // Let's map old types to new ones if possible, or just add them to the map dynamically?
+    // The prompt says "Updated compute_type_distribution in app.py to use this internal order"
+    // So we strictly use this list.
+    
+    // Simple mapping for legacy data (optional but helpful)
+    let normalizedKey = key;
+    if (key === 'delivery') normalizedKey = 'artifact'; // guess
+    if (key === 'presentation') normalizedKey = 'presentation slides';
+    if (key === 'exam') normalizedKey = 'written report'; // guess
+    if (key === 'report') normalizedKey = 'written report';
+    if (key === 'case study') normalizedKey = 'case analysis';
+
+    if (normalizedKey in typeMap) {
+      typeMap[normalizedKey] += a.weight;
+    } else if (key in typeMap) {
+       typeMap[key] += a.weight;
     }
   });
 

@@ -37,11 +37,28 @@
   --color-ring: hsl(var(--ring));
 
   /* Assessment Types */
-  --color-delivery: hsl(var(--tu-navy));
-  --color-presentation: hsl(var(--accent-red));
-  --color-exam: hsl(var(--accent-green));
-  --color-report: hsl(var(--accent-yellow));
-  --color-casestudy: hsl(var(--accent-purple));
+  --color-artifact: hsl(var(--tu-navy));
+  --color-case-analysis: hsl(180 100% 35%); /* brighter teal */
+  --color-code-submission: hsl(260 60% 60%); /* purple */
+  --color-essay: hsl(30 80% 55%); /* orange */
+  --color-lab-notebook: hsl(60 70% 40%); /* olive */
+  --color-portfolio: hsl(var(--accent-red));
+  --color-poster: hsl(300 50% 60%); /* pink */
+  --color-presentation-slides: hsl(20 90% 60%); /* deep orange */
+  --color-product-demonstration: hsl(200 60% 50%); /* blue */
+  --color-prototype: hsl(var(--accent-green));
+  --color-reflective-journal: hsl(0 0% 50%); /* gray */
+  --color-studio-output: hsl(150 50% 40%); /* forest green */
+  --color-thesis-dissertation-document: hsl(340 60% 50%); /* rose */
+  --color-video-recording: hsl(10 60% 50%); /* brown */
+  --color-written-report: hsl(var(--accent-yellow));
+  
+  /* Legacy mappings fallback */
+  --color-delivery: var(--color-artifact);
+  --color-presentation: var(--color-presentation-slides);
+  --color-exam: var(--color-written-report);
+  --color-report: var(--color-written-report);
+  --color-casestudy: var(--color-case-analysis);
 }
 
 :root {
