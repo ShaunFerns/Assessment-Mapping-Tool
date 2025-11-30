@@ -23,12 +23,14 @@ export default function Visualisations() {
         const clone = printRef.current.cloneNode(true) as HTMLElement;
         
         // Style the clone to sit off-screen but be fully expanded
-        clone.style.position = 'fixed'; // fixed to viewport to avoid scroll issues
-        clone.style.top = '-10000px';
+        // IMPORTANT: We cannot use top: -10000px because some browsers treat it as off-screen and don't render content
+        // Instead, we position it absolute at 0,0 with a very low z-index
+        clone.style.position = 'absolute'; 
+        clone.style.top = '0';
         clone.style.left = '0';
         clone.style.width = `${printWidth}px`;
         clone.style.height = 'auto';
-        clone.style.zIndex = '-1000';
+        clone.style.zIndex = '-9999'; // Behind everything
         clone.style.overflow = 'visible';
         clone.style.backgroundColor = 'hsl(210, 20%, 97%)'; // Ensure background color is preserved
 
@@ -43,12 +45,16 @@ export default function Visualisations() {
         // Append to body so it renders layout
         document.body.appendChild(clone);
 
+        // Wait a moment for layout to settle and fonts/images to be ready
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         // Capture the clone
         const dataUrl = await toPng(clone, { 
             cacheBust: true,
             width: printWidth,
             height: clone.offsetHeight,
-            backgroundColor: 'hsl(210, 20%, 97%)'
+            backgroundColor: 'hsl(210, 20%, 97%)',
+            pixelRatio: 2 // High resolution
         });
 
         // Clean up
