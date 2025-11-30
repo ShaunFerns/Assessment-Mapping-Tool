@@ -1,0 +1,408 @@
+You are building a small but polished Python/Flask web app that lets TU Dublin programme teams map their assessments across a semester and automatically generate visualisations similar to the three images provided (assessment heatmap, triangle timeline, and outcome matrix).
+
+The app is standalone, no login/auth for now, and will be used live with TU Dublin programme teams, so the UI must be clean, robust, and intuitive.
+
+Use a similar layout/style to an existing DELTA tool (Flask + templates), but with TU Dublin colours: navy and teal as primary colours. Do not use any JavaScript frameworks; use simple JS only where necessary.
+
+1. Tech stack and dependencies
+
+Create a Flask app with:
+
+Flask
+
+pandas (for simple tabular transforms if needed)
+
+python-dotenv (optional)
+
+No database for now: store everything in memory using Python lists/dicts. Structure code so that later we can swap to a database.
+
+Create requirements.txt with (at minimum):
+
+Flask==3.0.3
+pandas==2.2.2
+
+
+(Adjust versions if needed, but pin them.)
+
+2. File and folder structure
+
+Set up this structure:
+
+.
+├─ app.py
+├─ requirements.txt
+├─ static/
+│  ├─ css/
+│  │  └─ style.css
+│  └─ img/
+├─ templates/
+│  ├─ base.html
+│  ├─ home.html
+│  ├─ programme_form.html
+│  ├─ module_form.html
+│  ├─ assessment_form.html
+│  ├─ assessment_list.html
+│  ├─ visual_triangle.html
+│  └─ visual_heatmap.html
+
+
+You can add helper modules (e.g. models.py) if you prefer, but keep it simple.
+
+3. Data model (in memory for MVP)
+
+Represent everything as Python dicts in memory (global variables in app.py):
+
+programme = {"name": str, "weeks": int}
+
+Only one programme is needed for MVP.
+
+Default weeks = 14.
+
+modules = [] (list of module dicts)
+Each module:
+
+{
+    "id": int,
+    "code": str,
+    "title": str
+}
+
+
+assessments = [] (list of assessment dicts)
+Each assessment:
+
+{
+    "id": int,
+    "module_id": int,
+    "week": int,               # 1..programme["weeks"]
+    "weight": int,             # percentage
+    "atype": str,              # "delivery", "presentation", "exam", "report", "casestudy"
+    "mode": str,               # "group" or "individual"
+    "plo": str,                # Programme Learning Outcomes (free text)
+    "mlo": str,                # Module Learning Outcomes (free text)
+    "ga": str                  # Graduate Attribute (free text e.g. People / Planet / Partnership)
+}
+
+
+Use a simple integer counter for IDs.
+
+4. Routes and views
+
+Implement these routes:
+
+GET / – Home
+
+Shows a short explanation of the tool’s purpose (TU Dublin assessment mapping).
+
+Buttons/links to:
+
+“Set programme details”
+
+“Manage modules”
+
+“Add assessments”
+
+“View visualisations”
+
+GET, POST /programme
+
+Form fields:
+
+Programme name
+
+Number of weeks (default 14)
+
+POST saves to the global programme dict.
+
+After save, redirect to /modules.
+
+GET, POST /modules
+
+Lists existing modules in a table.
+
+Form at top or separate page to add a module:
+
+Module code
+
+Module title
+
+POST adds a new module to modules.
+
+Provide a “Delete” button for each module (simple remove in memory is fine).
+
+GET, POST /assessments
+
+Displays:
+
+A form to add a new assessment.
+
+A table listing existing assessments.
+
+Form fields:
+
+Module (dropdown from modules)
+
+Week (integer 1..programme["weeks"])
+
+Weighting (%)
+
+Assessment type (select: Delivery, Presentation, Exam, Report, Case Study)
+
+Mode (radio: Group / Individual)
+
+Programme Learning Outcome (PLO) – textarea
+
+Module Learning Outcome (MLO) – textarea
+
+Graduate Attribute (GA) – input text (for now; e.g. People/Planet/Partnership)
+
+POST creates assessment and redirects back to /assessments.
+
+GET /visualisations
+
+Simple page with buttons/links:
+
+“Triangle timeline view” → /visual/triangle
+
+“Assessment heatmap view” → /visual/heatmap
+
+GET /visual/triangle
+
+Renders the triangle timeline visual (see section 5 below).
+
+GET /visual/heatmap
+
+Renders a simpler block timeline / heatmap using coloured rectangles per assessment (see section 6).
+
+No export buttons are required for this MVP; the browser print/export to PDF is fine. Leave hooks (empty buttons) where export could be added later.
+
+5. Triangle timeline visual (visual_triangle.html)
+
+Goal: approximate the third uploaded image.
+
+Layout:
+
+Vertical axis: modules (one row per module).
+
+Horizontal axis: weeks 1..programme["weeks"].
+
+For each module:
+
+Draw a horizontal navy bar spanning all weeks (or the defined weeks).
+
+For each assessment in that module:
+
+Draw a triangle marker positioned above the bar at the appropriate week.
+
+Inside the triangle, show the weighting %.
+
+Beneath or around the triangle, display three small text labels for:
+
+PLO
+
+MLO
+
+GA
+
+A small coloured circle in the triangle or directly behind it shows the assessment type.
+
+The bar line style below the marker reflects mode:
+
+Solid outline for Group
+
+Dashed outline for Individual
+
+Implementation detail (keep it simple):
+
+Use HTML + CSS, not a plotting library.
+
+Use a CSS grid:
+
+One grid column per week.
+
+One grid row per module.
+
+For each assessment:
+
+Place a container div in the appropriate grid cell.
+
+In that container, create the triangle using CSS:
+
+Easiest approach: an SVG element (<svg> with a <polygon>).
+
+Inside SVG, place the percentage text.
+
+Outside/around the triangle (below it), place three inline labels:
+
+“PLO: …”
+
+“MLO: …”
+
+“GA: …”
+These can be truncated with CSS (ellipsis) if long.
+
+At the bottom of the page, include a legend with:
+
+A navy rectangle labelled “Delivery”
+
+A red circle labelled “Presentation”
+
+A green circle labelled “Exam”
+
+A yellow circle labelled “Report”
+
+A dark blue circle labelled “Case study”
+
+A solid line labelled “Group”
+
+A dashed line labelled “Individual”
+
+You do not have to exactly match colours from the screenshot, but:
+
+Backgrounds and main bars should use TU Dublin navy and teal.
+
+Accent colours can be used for the circles.
+
+6. Assessment heatmap view (visual_heatmap.html)
+
+Goal: approximate the second image (block layout).
+
+Layout:
+
+Vertical axis: modules (one per row).
+
+Horizontal axis: weeks 1..programme["weeks"].
+
+For each assessment:
+
+Draw a coloured block spanning one week (one column) in the appropriate module row.
+
+The block shows:
+
+Week + weighting (e.g. “WK 7: 50% Exam – Group”).
+
+Short text within the block can include some or all of:
+
+GA
+
+PLO / MLO cues.
+
+Use CSS grid again: rows = modules, columns = weeks.
+
+Colour mapping:
+
+Delivery: navy block
+
+Presentation: red block
+
+Exam: green block
+
+Report: yellow block
+
+Case study: purple block
+
+Add a legend similar to above.
+
+7. Base template and styling
+
+templates/base.html:
+
+Use a simple top navigation bar with TU Dublin navy background and white text:
+
+App title: “TU Dublin Assessment Mapping Tool”
+
+Links: Home, Programme, Modules, Assessments, Visualisations.
+
+Include a content block:
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+
+static/css/style.css:
+
+Define colours (approximate TU Dublin palette):
+
+:root {
+    --tu-navy: #003B5C;
+    --tu-teal: #00A6A6;
+    --tu-light-bg: #f5f7fa;
+    --accent-red: #e74c3c;
+    --accent-green: #27ae60;
+    --accent-yellow: #f1c40f;
+    --accent-purple: #6c5ce7;
+}
+
+
+Body:
+
+sans-serif font (e.g. system font stack).
+
+light background.
+
+.navbar:
+
+background: var(--tu-navy);
+
+text: white.
+
+Buttons and primary actions:
+
+background: var(--tu-teal);
+
+hover: darker teal or navy.
+
+Tables and forms:
+
+clean, minimal borders.
+
+Grid for timelines:
+
+Use display: grid.
+
+Light grey vertical grid lines to mark weeks.
+
+Module labels aligned left in a fixed column.
+
+Aim for a clean, professional academic dashboard look.
+
+8. UX details
+
+After creating programme, modules, or assessments, redirect to the relevant listing page with a simple Bootstrap-style flash message (you can implement your own basic message styling).
+
+Validate forms minimally:
+
+Week must be within 1..programme["weeks"].
+
+Weighting must be 0–100.
+
+Module list must not be empty when adding assessments.
+
+If there is no programme yet, show a warning on pages that require it and link users to /programme.
+
+9. Testing checklist
+
+Before finishing:
+
+Start the app with python app.py.
+
+Set a programme: name “MSc Management S1” and 14 weeks.
+
+Add 3–4 modules.
+
+Add several assessments across different weeks and modules, with mixed types and modes.
+
+Confirm:
+
+Assessments appear correctly in the list.
+
+Triangle timeline shows one row per module and triangles in the correct week.
+
+Heatmap view shows coloured blocks for each assessment.
+
+Legends appear and make sense.
+
+Navigation works across pages.
+
+Make sure the app runs without errors in Replit.

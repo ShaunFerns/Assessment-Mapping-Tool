@@ -2,7 +2,7 @@ import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { ArrowRight, BarChart2, BookOpen, Settings } from "lucide-react";
-// import generatedImage from '@assets/generated_images/abstract_geometric_background_in_navy_and_teal.png';
+import generatedImage from '@assets/generated_images/abstract_geometric_background_in_navy_and_teal.png';
 
 export default function Home() {
   const { programme } = useAppStore();
@@ -14,10 +14,7 @@ export default function Home() {
         {/* Background Image Overlay */}
         <div 
           className="absolute inset-0 opacity-30 bg-cover bg-center mix-blend-overlay"
-          style={{ 
-            // backgroundImage: `url(${generatedImage})` 
-            background: 'linear-gradient(135deg, #003B5C 0%, #00A6A6 100%)'
-          }}
+          style={{ backgroundImage: `url(${generatedImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-transparent" />
         

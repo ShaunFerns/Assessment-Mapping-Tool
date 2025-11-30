@@ -35,23 +35,6 @@ export default function AnalyticsDashboard() {
   const typeData = typeLabels.map((name, i) => ({ name, value: typeValues[i] })).filter(d => d.value > 0);
   
   const COLORS: Record<string, string> = {
-    'Artifact': 'var(--color-artifact)',
-    'Case analysis': 'var(--color-case-analysis)',
-    'Code submission': 'var(--color-code-submission)',
-    'Essay': 'var(--color-essay)',
-    'Lab notebook': 'var(--color-lab-notebook)',
-    'Portfolio': 'var(--color-portfolio)',
-    'Poster': 'var(--color-poster)',
-    'Presentation slides': 'var(--color-presentation-slides)',
-    'Product demonstration': 'var(--color-product-demonstration)',
-    'Prototype': 'var(--color-prototype)',
-    'Reflective journal': 'var(--color-reflective-journal)',
-    'Studio output': 'var(--color-studio-output)',
-    'Thesis / dissertation document': 'var(--color-thesis-dissertation-document)',
-    'Video recording': 'var(--color-video-recording)',
-    'Written report': 'var(--color-written-report)',
-    
-    // Legacy
     'Delivery': 'var(--color-delivery)',
     'Presentation': 'var(--color-presentation)',
     'Exam': 'var(--color-exam)',
