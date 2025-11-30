@@ -20,10 +20,10 @@ export default function Home() {
         
         <div className="relative z-10 container px-12 py-12 max-w-3xl">
           <h1 className="text-5xl font-heading font-bold leading-tight mb-6">
-            Assessment Mapping & Visualization
+            Assessment Mapping & Visualisation
           </h1>
           <p className="text-lg text-primary-foreground/80 mb-8 max-w-xl leading-relaxed">
-            A robust tool for programme teams to map assessments, balance student workload, and visualize learning outcomes across the semester.
+            A robust tool for programme teams to map assessments, balance student workload, and visualise learning outcomes across the semester.
           </p>
           
           <div className="flex flex-wrap gap-4">
