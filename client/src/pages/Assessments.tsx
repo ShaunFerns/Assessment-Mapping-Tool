@@ -10,8 +10,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   moduleId: z.coerce.number().min(1, "Select a module"),
@@ -224,37 +225,70 @@ export default function Assessments() {
               No assessments added yet.
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Module</TableHead>
-                  <TableHead>Wk</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Mode</TableHead>
-                  <TableHead>Weight</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {assessments.sort((a,b) => a.week - b.week).map((assessment) => {
-                  const module = modules.find(m => m.id === assessment.moduleId);
-                  return (
-                    <TableRow key={assessment.id}>
-                      <TableCell className="font-medium text-primary">{module?.code}</TableCell>
-                      <TableCell>{assessment.week}</TableCell>
-                      <TableCell>{assessment.atype}</TableCell>
-                      <TableCell><span className="text-xs bg-muted px-2 py-1 rounded">{assessment.mode}</span></TableCell>
-                      <TableCell>{assessment.weight}%</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => removeAssessment(assessment.id)} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            <div className="space-y-8">
+              {modules.map((module) => {
+                const moduleAssessments = assessments
+                  .filter(a => a.moduleId === module.id)
+                  .sort((a,b) => a.week - b.week);
+                
+                const totalWeight = moduleAssessments.reduce((sum, a) => sum + a.weight, 0);
+                const isComplete = totalWeight === 100;
+                const isOver = totalWeight > 100;
+
+                // Only show modules that have assessments (or show empty state if preferred, but prompt implies list ordering)
+                // Let's show all modules so user sees what's missing
+                
+                return (
+                  <div key={module.id} className="border rounded-lg overflow-hidden">
+                    <div className="bg-muted/30 px-4 py-3 flex items-center justify-between border-b">
+                      <div>
+                        <h3 className="font-bold text-primary">{module.code} - {module.title}</h3>
+                      </div>
+                      <div className={cn(
+                        "flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold",
+                        isComplete ? "bg-green-100 text-green-700 border border-green-200" : 
+                        isOver ? "bg-red-100 text-red-700 border border-red-200" : 
+                        "bg-amber-100 text-amber-700 border border-amber-200"
+                      )}>
+                        {isComplete ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
+                        Total: {totalWeight}%
+                      </div>
+                    </div>
+                    
+                    {moduleAssessments.length === 0 ? (
+                      <div className="p-4 text-sm text-muted-foreground italic text-center">No assessments mapped for this module yet.</div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="hover:bg-transparent">
+                            <TableHead className="w-[80px]">Week</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Mode</TableHead>
+                            <TableHead className="w-[80px]">Weight</TableHead>
+                            <TableHead className="text-right w-[80px]">Action</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {moduleAssessments.map((assessment) => (
+                            <TableRow key={assessment.id}>
+                              <TableCell>Week {assessment.week}</TableCell>
+                              <TableCell>{assessment.atype}</TableCell>
+                              <TableCell><span className="text-xs bg-muted px-2 py-1 rounded">{assessment.mode}</span></TableCell>
+                              <TableCell className="font-medium">{assessment.weight}%</TableCell>
+                              <TableCell className="text-right">
+                                <Button variant="ghost" size="icon" onClick={() => removeAssessment(assessment.id)} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 h-8 w-8">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           )}
         </CardContent>
       </Card>

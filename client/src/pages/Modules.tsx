@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 
 const formSchema = z.object({
   code: z.string().min(2, "Code required"),
@@ -80,41 +81,51 @@ export default function Modules() {
       </div>
 
       {/* Right: List */}
-      <Card className="shadow-sm min-h-[500px]">
-        <CardHeader>
-          <CardTitle className="text-2xl font-heading text-primary">Existing Modules</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {modules.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground bg-muted/20 rounded-lg border border-dashed border-border">
-              No modules added yet. Add one to get started.
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Code</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {modules.map((module) => (
-                  <TableRow key={module.id}>
-                    <TableCell className="font-bold text-primary">{module.code}</TableCell>
-                    <TableCell>{module.title}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => removeModule(module.id)} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
+      <div className="flex flex-col gap-4">
+        <Card className="shadow-sm min-h-[500px]">
+          <CardHeader>
+            <CardTitle className="text-2xl font-heading text-primary">Existing Modules</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {modules.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground bg-muted/20 rounded-lg border border-dashed border-border">
+                No modules added yet. Add one to get started.
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">Code</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {modules.map((module) => (
+                    <TableRow key={module.id}>
+                      <TableCell className="font-bold text-primary">{module.code}</TableCell>
+                      <TableCell>{module.title}</TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" onClick={() => removeModule(module.id)} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+        
+        <div className="flex justify-end">
+          <Link href="/assessments">
+            <Button size="lg" className="gap-2 bg-secondary hover:bg-secondary/90 text-white">
+              Continue to Assessments <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
