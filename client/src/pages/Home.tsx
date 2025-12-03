@@ -27,24 +27,24 @@ export default function Home() {
           </p>
           
           <div className="flex flex-wrap gap-4">
+            <Link href="/programme">
+              <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-white font-bold rounded-full px-8 h-12 shadow-lg shadow-secondary/20 transition-transform hover:-translate-y-0.5">
+                Manage Programme
+              </Button>
+            </Link>
             {!programme ? (
               <Link href="/programme">
-                <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-white font-bold rounded-full px-8 h-12 shadow-lg shadow-secondary/20 transition-transform hover:-translate-y-0.5">
+                <Button variant="outline" size="lg" className="border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-full px-8 h-12 backdrop-blur-sm">
                   Start Mapping <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
             ) : (
               <Link href="/visualisations">
-                 <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-white font-bold rounded-full px-8 h-12 shadow-lg shadow-secondary/20 transition-transform hover:-translate-y-0.5">
+                 <Button variant="outline" size="lg" className="border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-full px-8 h-12 backdrop-blur-sm">
                   View Visualisations <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
             )}
-            <Link href="/programme">
-              <Button variant="outline" size="lg" className="border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-full px-8 h-12 backdrop-blur-sm">
-                Manage Programme
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
