@@ -44,7 +44,7 @@ export default function Assessments() {
   });
 
   const selectedModuleId = form.watch("moduleId");
-  const selectedModule = modules.find(m => m.id === selectedModuleId);
+  const selectedModule = modules.find(m => m.id === Number(selectedModuleId));
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     addAssessment({
