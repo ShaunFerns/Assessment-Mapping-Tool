@@ -87,7 +87,11 @@ export default function VisualHeatmap({ stageFilter = 1, semesterFilter = '1' }:
                           <span className="opacity-80">{assessment.mode === 'Group' ? 'GRP' : 'IND'}</span>
                         </div>
                         <div className="truncate font-medium mt-0.5">{assessment.atype}</div>
-                        {assessment.ga && <div className="mt-1 pt-1 border-t border-white/20 opacity-90 truncate font-light italic">{assessment.ga}</div>}
+                        {assessment.ga && assessment.ga.length > 0 && (
+                          <div className="mt-1 pt-1 border-t border-white/20 opacity-90 truncate font-light italic">
+                            {Array.isArray(assessment.ga) ? assessment.ga.join(", ") : assessment.ga}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

@@ -57,9 +57,18 @@ export function computeGACoverage(assessments: Assessment[]) {
   const gaTotals = [0, 0, 0];
 
   assessments.forEach(a => {
-    const ga = (a.ga || "").trim().toLowerCase();
+    // Handle ga as array (new format) or string (legacy)
+    let gaList: string[] = [];
+    if (Array.isArray(a.ga)) {
+      gaList = a.ga;
+    } else if (typeof a.ga === 'string') {
+      gaList = [(a.ga || "").trim()];
+    }
+
     gaLabels.forEach((label, i) => {
-      if (ga.includes(label.toLowerCase())) {
+      // Check if any of the GA tags match this label
+      const matches = gaList.some(g => g.toLowerCase().includes(label.toLowerCase()));
+      if (matches) {
         gaTotals[i] += a.weight;
       }
     });

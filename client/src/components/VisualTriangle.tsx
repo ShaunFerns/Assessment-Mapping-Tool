@@ -123,9 +123,15 @@ export default function VisualTriangle({ stageFilter = 1, semesterFilter = '1' }
 
                         {/* Metadata Labels */}
                         <div className="mt-1 flex flex-col items-center gap-0.5 w-24">
-                           {assessment.plo && <span className="text-[9px] leading-tight text-center text-muted-foreground bg-white/80 px-1 rounded border border-border/50 truncate max-w-full">P: {assessment.plo}</span>}
-                           {assessment.mlo && <span className="text-[9px] leading-tight text-center text-muted-foreground bg-white/80 px-1 rounded border border-border/50 truncate max-w-full">M: {assessment.mlo}</span>}
-                           {assessment.ga && <span className="text-[9px] leading-tight text-center text-muted-foreground bg-white/80 px-1 rounded border border-border/50 truncate max-w-full">G: {assessment.ga}</span>}
+                           {(assessment.plos && assessment.plos.length > 0) && <span className="text-[9px] leading-tight text-center text-muted-foreground bg-white/80 px-1 rounded border border-border/50 truncate max-w-full">P: {assessment.plos.join(', ')}</span>}
+                           {/* Legacy support for plo string */}
+                           {(!assessment.plos && assessment.plo) && <span className="text-[9px] leading-tight text-center text-muted-foreground bg-white/80 px-1 rounded border border-border/50 truncate max-w-full">P: {assessment.plo}</span>}
+                           
+                           {(assessment.mlos && assessment.mlos.length > 0) && <span className="text-[9px] leading-tight text-center text-muted-foreground bg-white/80 px-1 rounded border border-border/50 truncate max-w-full">M: {assessment.mlos.join(', ')}</span>}
+                           {/* Legacy support for mlo string */}
+                           {(!assessment.mlos && assessment.mlo) && <span className="text-[9px] leading-tight text-center text-muted-foreground bg-white/80 px-1 rounded border border-border/50 truncate max-w-full">M: {assessment.mlo}</span>}
+
+                           {(assessment.ga && assessment.ga.length > 0) && <span className="text-[9px] leading-tight text-center text-muted-foreground bg-white/80 px-1 rounded border border-border/50 truncate max-w-full">G: {Array.isArray(assessment.ga) ? assessment.ga.join(', ') : assessment.ga}</span>}
                         </div>
                         
                         {/* Tooltip for full details */}
@@ -133,9 +139,9 @@ export default function VisualTriangle({ stageFilter = 1, semesterFilter = '1' }
                           <div className="font-bold mb-1">{assessment.atype} ({assessment.mode})</div>
                           <div className="mb-1">Weight: {assessment.weight}%</div>
                           <div className="text-[10px] text-muted-foreground">
-                            <p><strong>PLO:</strong> {assessment.plo}</p>
-                            <p><strong>MLO:</strong> {assessment.mlo}</p>
-                            <p><strong>GA:</strong> {assessment.ga}</p>
+                            <p><strong>PLO:</strong> {assessment.plos ? assessment.plos.join(', ') : assessment.plo}</p>
+                            <p><strong>MLO:</strong> {assessment.mlos ? assessment.mlos.join(', ') : assessment.mlo}</p>
+                            <p><strong>GA:</strong> {Array.isArray(assessment.ga) ? assessment.ga.join(', ') : assessment.ga}</p>
                           </div>
                         </div>
                       </div>
