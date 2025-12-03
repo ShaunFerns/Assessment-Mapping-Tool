@@ -31,27 +31,15 @@ export default function VisualTriangle({ stageFilter = 1, semesterFilter = '1' }
     return <div className="p-8 text-center text-muted-foreground">No modules found for the selected Stage/Semester.</div>;
   }
 
-  // Helper to get color class
-  const getTypeColor = (type: string) => {
+  // Helper to get color hex
+  const getTypeColorHex = (type: string) => {
     switch (type) {
-      case 'Delivery': return 'fill-[var(--color-delivery)] stroke-[var(--color-delivery)] text-[var(--color-delivery)]';
-      case 'Presentation': return 'fill-[var(--color-presentation)] stroke-[var(--color-presentation)] text-[var(--color-presentation)]';
-      case 'Exam': return 'fill-[var(--color-exam)] stroke-[var(--color-exam)] text-[var(--color-exam)]';
-      case 'Report': return 'fill-[var(--color-report)] stroke-[var(--color-report)] text-[var(--color-report)]';
-      case 'Case Study': return 'fill-[var(--color-casestudy)] stroke-[var(--color-casestudy)] text-[var(--color-casestudy)]';
-      default: return 'fill-gray-500 stroke-gray-500 text-gray-500';
-    }
-  };
-  
-  // Helper for background circle color (solid)
-  const getCircleColor = (type: string) => {
-     switch (type) {
-      case 'Delivery': return 'bg-[var(--color-delivery)]';
-      case 'Presentation': return 'bg-[var(--color-presentation)]';
-      case 'Exam': return 'bg-[var(--color-exam)]';
-      case 'Report': return 'bg-[var(--color-report)]';
-      case 'Case Study': return 'bg-[var(--color-casestudy)]';
-      default: return 'bg-gray-500';
+      case 'Delivery': return '#003B5C'; // Navy
+      case 'Presentation': return '#e74c3c'; // Red
+      case 'Exam': return '#27ae60'; // Green
+      case 'Report': return '#f1c40f'; // Yellow
+      case 'Case Study': return '#6c5ce7'; // Purple
+      default: return '#6b7280'; // Gray
     }
   };
 
@@ -97,15 +85,18 @@ export default function VisualTriangle({ stageFilter = 1, semesterFilter = '1' }
                            {/* The Triangle Shape */}
                            <path 
                              d="M20 5 L35 35 L5 35 Z" 
-                             className={cn(
-                               "fill-white stroke-2", 
-                               getTypeColor(assessment.atype).replace('fill-', 'dummy-').replace('text-', 'dummy-') // only keep stroke
-                             )}
-                             style={{ fill: 'white' }}
+                             className="fill-white stroke-2"
+                             style={{ 
+                               fill: 'white',
+                               stroke: getTypeColorHex(assessment.atype)
+                             }}
                            />
                            
                            {/* Inner Circle for Type Color */}
-                           <circle cx="20" cy="25" r="4" className={getTypeColor(assessment.atype).replace('stroke-', 'dummy-').replace('text-', 'dummy-')} />
+                           <circle 
+                             cx="20" cy="25" r="4" 
+                             style={{ fill: getTypeColorHex(assessment.atype) }}
+                           />
                            
                            {/* Mode Indicator (Line at bottom) */}
                            {assessment.mode === 'Individual' && (
@@ -160,7 +151,7 @@ export default function VisualTriangle({ stageFilter = 1, semesterFilter = '1' }
           <span className="font-bold text-primary">Assessment Types:</span>
           {['Delivery', 'Presentation', 'Exam', 'Report', 'Case Study'].map(type => (
              <div key={type} className="flex items-center gap-1.5">
-               <div className={cn("w-3 h-3 rounded-full", getCircleColor(type))} />
+               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getTypeColorHex(type) }} />
                <span>{type}</span>
              </div>
           ))}
@@ -180,4 +171,5 @@ export default function VisualTriangle({ stageFilter = 1, semesterFilter = '1' }
       </div>
     </div>
   );
+
 }
