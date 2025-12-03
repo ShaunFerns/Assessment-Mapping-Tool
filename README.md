@@ -1,4 +1,4 @@
-# Assessment Mapping Tool (Ferns Prototype)
+# Curriculum Insight Suite
 
 A polished React/TypeScript web application designed for TU Dublin programme teams to map module assessments across semesters, visualize assessment distribution and workload, and analyze learning outcome alignment.
 
@@ -71,4 +71,4 @@ This application is currently running in **Mockup Mode**.
 *   `client/src/lib/analytics.ts`: Helper functions for data processing and calculations.
 
 ---
-*© 2025 Ferns Prototype*
+*© 2025 Curriculum Insight Suite*
