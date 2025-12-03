@@ -38,7 +38,7 @@ export type Assessment = {
   mode: AssessmentMode;
   plos: string[];
   mlos: string[];
-  ga: string;
+  ga: string[];
 };
 
 interface AppState {

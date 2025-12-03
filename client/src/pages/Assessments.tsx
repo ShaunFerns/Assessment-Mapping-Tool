@@ -23,7 +23,7 @@ const formSchema = z.object({
   mode: z.enum(['Group', 'Individual']),
   plos: z.array(z.string()),
   mlos: z.array(z.string()),
-  ga: z.string().optional(),
+  ga: z.array(z.string()),
 });
 
 export default function Assessments() {
@@ -39,7 +39,7 @@ export default function Assessments() {
       mode: 'Individual',
       plos: [],
       mlos: [],
-      ga: '',
+      ga: [],
     },
   });
 
@@ -56,7 +56,7 @@ export default function Assessments() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     addAssessment({
         ...values, 
-        ga: values.ga || ""
+        ga: values.ga || []
     });
     // Keep some values for easier subsequent entry
     form.reset({
@@ -67,7 +67,7 @@ export default function Assessments() {
         mode: 'Individual',
         plos: [], 
         mlos: [], 
-        ga: ''
+        ga: []
     });
     toast({ title: "Assessment Added" });
   }
@@ -320,12 +320,53 @@ export default function Assessments() {
                     )}
                   />
 
-                  <FormField control={form.control} name="ga" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs text-muted-foreground">Graduate Attribute (GA)</FormLabel>
-                      <FormControl><Input placeholder="e.g. People/Planet..." {...field} className="h-8 text-sm" /></FormControl>
-                    </FormItem>
-                  )} />
+                  <FormField
+                    control={form.control}
+                    name="ga"
+                    render={() => (
+                      <FormItem>
+                        <div className="mb-2">
+                          <FormLabel>Graduate Attributes (GA)</FormLabel>
+                        </div>
+                        <div className="flex flex-wrap gap-4 p-3 border rounded-md bg-muted/10">
+                          {['People', 'Planet', 'Partnership'].map((item) => (
+                            <FormField
+                              key={item}
+                              control={form.control}
+                              name="ga"
+                              render={({ field }) => {
+                                return (
+                                  <FormItem
+                                    key={item}
+                                    className="flex flex-row items-center space-x-2 space-y-0"
+                                  >
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(item)}
+                                        onCheckedChange={(checked) => {
+                                          return checked
+                                            ? field.onChange([...field.value, item])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                  (value) => value !== item
+                                                )
+                                              )
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormLabel className="text-sm font-normal cursor-pointer">
+                                      {item}
+                                    </FormLabel>
+                                  </FormItem>
+                                )
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <Button type="submit" className="w-full bg-secondary hover:bg-secondary/90 text-white font-bold">
