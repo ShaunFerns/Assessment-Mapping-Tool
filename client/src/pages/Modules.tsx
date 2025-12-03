@@ -17,7 +17,6 @@ const formSchema = z.object({
   title: z.string().min(2, "Title required"),
   stage: z.coerce.number().min(1).max(4),
   semester: z.string().min(1, "Semester required"),
-  mloCount: z.coerce.number().min(1).max(12),
 });
 
 export default function Modules() {
@@ -31,18 +30,20 @@ export default function Modules() {
       title: "",
       stage: 1,
       semester: "1",
-      mloCount: 4,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    addModule(values);
+    // Default to 6 MLOs if not specified
+    addModule({
+      ...values,
+      mloCount: 6 
+    });
     form.reset({
       code: "",
       title: "",
       stage: values.stage, // Keep last used stage
       semester: values.semester, // Keep last used semester
-      mloCount: values.mloCount,
     });
     toast({ title: "Module Added" });
   }
@@ -125,20 +126,6 @@ export default function Modules() {
                       <FormLabel>Module Title</FormLabel>
                       <FormControl>
                         <Input placeholder="e.g. Intro to Management" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="mloCount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Number of MLOs</FormLabel>
-                      <FormControl>
-                        <Input type="number" min={1} max={12} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -48,6 +48,7 @@ interface AppState {
   assessments: Assessment[];
   setProgramme: (p: Programme) => void;
   addModule: (m: Omit<Module, 'id' | 'mlos'>) => void;
+  updateModuleMLOCount: (moduleId: number, count: number) => void;
   removeModule: (id: number) => void;
   addAssessment: (a: Omit<Assessment, 'id'>) => void;
   removeAssessment: (id: number) => void;
@@ -87,6 +88,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setNextModuleId(prev => prev + 1);
   };
   
+  const updateModuleMLOCount = (moduleId: number, count: number) => {
+    setModules(modules.map(m => {
+      if (m.id === moduleId) {
+        const newMLOs = Array.from({ length: count }, (_, i) => ({
+          code: `MLO${i + 1}`,
+          description: `Module Learning Outcome ${i + 1}`
+        }));
+        return { ...m, mloCount: count, mlos: newMLOs };
+      }
+      return m;
+    }));
+  };
+
   const removeModule = (id: number) => {
     setModules(modules.filter(m => m.id !== id));
     setAssessments(assessments.filter(a => a.moduleId !== id));
@@ -109,6 +123,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       assessments, 
       setProgramme, 
       addModule, 
+      updateModuleMLOCount,
       removeModule, 
       addAssessment, 
       removeAssessment 
