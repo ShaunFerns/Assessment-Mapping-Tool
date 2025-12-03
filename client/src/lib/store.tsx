@@ -58,9 +58,9 @@ const AppContext = createContext<AppState | undefined>(undefined);
 
 // Initial Dummy Data for testing if user skips setup
 const INITIAL_MODULES: Module[] = [
-  { id: 1, code: 'MGMT101', title: 'Principles of Management', stage: 1, semester: '1', mloCount: 4, mlos: Array.from({length: 4}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
-  { id: 2, code: 'MKTG202', title: 'Marketing Strategy', stage: 1, semester: '2', mloCount: 3, mlos: Array.from({length: 3}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
-  { id: 3, code: 'FIN303', title: 'Financial Accounting', stage: 2, semester: '1', mloCount: 5, mlos: Array.from({length: 5}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
+  { id: 1, code: 'MGMT101', title: 'Principles of Management', stage: 1, semester: '1', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
+  { id: 2, code: 'MKTG202', title: 'Marketing Strategy', stage: 1, semester: '2', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
+  { id: 3, code: 'FIN303', title: 'Financial Accounting', stage: 2, semester: '1', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
 ];
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -80,11 +80,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [programme]);
 
   const addModule = (m: Omit<Module, 'id' | 'mlos'>) => {
-    const newMLOs = Array.from({ length: m.mloCount }, (_, i) => ({
+    const mloCount = 6; // Enforce 6 MLOs
+    const newMLOs = Array.from({ length: mloCount }, (_, i) => ({
       code: `MLO${i + 1}`,
       description: `Module Learning Outcome ${i + 1}`
     }));
-    setModules([...modules, { ...m, id: nextModuleId, mlos: newMLOs }]);
+    setModules([...modules, { ...m, mloCount, id: nextModuleId, mlos: newMLOs }]);
     setNextModuleId(prev => prev + 1);
   };
   

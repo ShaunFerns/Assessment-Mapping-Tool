@@ -27,7 +27,7 @@ const formSchema = z.object({
 });
 
 export default function Assessments() {
-  const { modules, programme, assessments, addAssessment, removeAssessment, programmePlos, updateModuleMLOCount } = useAppStore();
+  const { modules, programme, assessments, addAssessment, removeAssessment, programmePlos } = useAppStore();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,13 +45,6 @@ export default function Assessments() {
 
   const selectedModuleId = form.watch("moduleId");
   const selectedModule = modules.find(m => m.id === selectedModuleId);
-
-  // Handler to update MLO count for selected module
-  const handleMloCountChange = (count: number) => {
-    if (selectedModuleId && count >= 1 && count <= 12) {
-      updateModuleMLOCount(selectedModuleId, count);
-    }
-  };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     addAssessment({
@@ -256,56 +249,41 @@ export default function Assessments() {
                     name="mlos"
                     render={() => (
                       <FormItem>
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="mb-2">
                           <FormLabel>Module LOs</FormLabel>
-                          {selectedModule && (
-                            <div className="flex items-center gap-2">
-                              <label className="text-xs text-muted-foreground whitespace-nowrap">Total MLOs:</label>
-                              <Input 
-                                type="number" 
-                                min={1} 
-                                max={12} 
-                                className="h-6 w-14 text-xs p-1" 
-                                value={selectedModule.mloCount} 
-                                onChange={(e) => handleMloCountChange(parseInt(e.target.value))}
-                              />
-                            </div>
-                          )}
                         </div>
                         <ScrollArea className="h-32 border rounded-md p-2">
                           {!selectedModule ? (
                              <div className="text-xs text-muted-foreground text-center py-4">Select a module first</div>
-                          ) : selectedModule.mlos.length === 0 ? (
-                            <div className="text-xs text-muted-foreground text-center py-4">No MLOs defined</div>
                           ) : (
                             <div className="grid grid-cols-3 gap-2">
-                              {selectedModule.mlos.map((item) => (
+                              {Array.from({length: 6}, (_, i) => `MLO${i+1}`).map((code) => (
                                 <FormField
-                                  key={item.code}
+                                  key={code}
                                   control={form.control}
                                   name="mlos"
                                   render={({ field }) => {
                                     return (
                                       <FormItem
-                                        key={item.code}
+                                        key={code}
                                         className="flex flex-row items-center space-x-2 space-y-0"
                                       >
                                         <FormControl>
                                           <Checkbox
-                                            checked={field.value?.includes(item.code)}
+                                            checked={field.value?.includes(code)}
                                             onCheckedChange={(checked) => {
                                               return checked
-                                                ? field.onChange([...field.value, item.code])
+                                                ? field.onChange([...field.value, code])
                                                 : field.onChange(
                                                     field.value?.filter(
-                                                      (value) => value !== item.code
+                                                      (value) => value !== code
                                                     )
                                                   )
                                             }}
                                           />
                                         </FormControl>
                                         <FormLabel className="text-sm font-normal cursor-pointer">
-                                          {item.code}
+                                          {code}
                                         </FormLabel>
                                       </FormItem>
                                     )
