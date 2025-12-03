@@ -118,8 +118,6 @@ export default function Visualisations() {
                  <SelectItem value="all">All Sems</SelectItem>
                  <SelectItem value="1">Sem 1</SelectItem>
                  <SelectItem value="2">Sem 2</SelectItem>
-                 <SelectItem value="A">Sem A</SelectItem>
-                 <SelectItem value="B">Sem B</SelectItem>
                </SelectContent>
              </Select>
           </div>

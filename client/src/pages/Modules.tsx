@@ -91,7 +91,7 @@ export default function Modules() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {["1", "2", "A", "B"].map((s) => (
+                            {["1", "2"].map((s) => (
                               <SelectItem key={s} value={s}>{s}</SelectItem>
                             ))}
                           </SelectContent>
