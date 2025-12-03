@@ -12,8 +12,8 @@ import { toPng } from "html-to-image";
 
 export default function Visualisations() {
   const printRef = useRef<HTMLDivElement>(null);
-  const [stageFilter, setStageFilter] = useState<string>("1");
-  const [semesterFilter, setSemesterFilter] = useState<string>("1");
+  const [stageFilter, setStageFilter] = useState<string>("all");
+  const [semesterFilter, setSemesterFilter] = useState<string>("all");
 
   const getFilterValues = () => {
     const s = stageFilter === "all" ? "all" : parseInt(stageFilter);

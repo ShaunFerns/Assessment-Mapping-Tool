@@ -27,9 +27,6 @@ export default function PLOCoverage({ stageFilter = 1, semesterFilter = '1' }: P
       assessments.forEach(a => {
         if (a.plos) {
           a.plos.forEach(p => plos.add(p));
-        } else if (a.plo) {
-          // Fallback for old data structure
-          a.plo.split(',').forEach(p => plos.add(p.trim()));
         }
       });
       return Array.from(plos).sort();
@@ -58,7 +55,7 @@ export default function PLOCoverage({ stageFilter = 1, semesterFilter = '1' }: P
     return assessments
       .filter(a => a.moduleId === moduleId)
       .reduce((sum, a) => {
-        const hasPlo = a.plos?.includes(plo) || (a.plo && a.plo.includes(plo));
+        const hasPlo = a.plos?.includes(plo);
         return hasPlo ? sum + a.weight : sum;
       }, 0);
   };
@@ -83,12 +80,14 @@ export default function PLOCoverage({ stageFilter = 1, semesterFilter = '1' }: P
         <div className="border border-border rounded-lg overflow-hidden">
           {/* Header Row: Modules */}
           <div className="flex border-b border-border bg-muted/30">
-            <div className="w-32 flex-shrink-0 p-3 font-bold text-primary text-sm border-r border-border">
+            <div className="w-32 flex-shrink-0 p-3 font-bold text-primary text-sm border-r border-border flex items-end">
               PLO Code
             </div>
             {filteredModules.map(m => (
-              <div key={m.id} className="flex-1 min-w-[100px] p-3 text-center text-xs font-bold text-primary border-r border-border last:border-r-0">
-                <div className="truncate" title={m.title}>{m.code}</div>
+              <div key={m.id} className="flex-1 min-w-[40px] p-2 text-center text-xs font-bold text-primary border-r border-border last:border-r-0 h-32 flex items-end justify-center pb-2">
+                <div className="truncate -rotate-90 w-32 origin-bottom-left translate-x-4 mb-1 text-left" title={m.title}>
+                  {m.code}
+                </div>
               </div>
             ))}
           </div>

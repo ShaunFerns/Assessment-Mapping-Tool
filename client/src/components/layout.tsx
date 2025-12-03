@@ -19,6 +19,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <header className="bg-primary text-primary-foreground shadow-md z-10">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Link href="/">
+              <img 
+                src="/tud_logo.png" 
+                alt="Home" 
+                className="h-10 w-10 cursor-pointer hover:opacity-90 transition-opacity object-contain"
+              />
+            </Link>
             <h1 className="font-heading font-bold text-lg tracking-tight hidden sm:block">
               Assessment Mapping Tool
             </h1>
