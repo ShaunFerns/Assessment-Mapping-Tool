@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 export type Programme = {
   name: string;
   weeks: number;
+  ploCount: number;
 };
 
 export type PLO = {
@@ -21,6 +22,7 @@ export type Module = {
   title: string;
   stage: number;
   semester: string;
+  mloCount: number;
   mlos: MLO[];
 };
 
@@ -41,14 +43,11 @@ export type Assessment = {
 
 interface AppState {
   programme: Programme | null;
-  programmePlos: PLO[];
+  programmePlos: PLO[]; // Derived
   modules: Module[];
   assessments: Assessment[];
   setProgramme: (p: Programme) => void;
-  addProgrammePLO: (plo: PLO) => void;
-  removeProgrammePLO: (code: string) => void;
   addModule: (m: Omit<Module, 'id' | 'mlos'>) => void;
-  updateModuleMLOs: (moduleId: number, mlos: MLO[]) => void;
   removeModule: (id: number) => void;
   addAssessment: (a: Omit<Assessment, 'id'>) => void;
   removeAssessment: (id: number) => void;
@@ -58,36 +57,36 @@ const AppContext = createContext<AppState | undefined>(undefined);
 
 // Initial Dummy Data for testing if user skips setup
 const INITIAL_MODULES: Module[] = [
-  { id: 1, code: 'MGMT101', title: 'Principles of Management', stage: 1, semester: '1', mlos: [] },
-  { id: 2, code: 'MKTG202', title: 'Marketing Strategy', stage: 1, semester: '2', mlos: [] },
-  { id: 3, code: 'FIN303', title: 'Financial Accounting', stage: 2, semester: '1', mlos: [] },
+  { id: 1, code: 'MGMT101', title: 'Principles of Management', stage: 1, semester: '1', mloCount: 4, mlos: Array.from({length: 4}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
+  { id: 2, code: 'MKTG202', title: 'Marketing Strategy', stage: 1, semester: '2', mloCount: 3, mlos: Array.from({length: 3}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
+  { id: 3, code: 'FIN303', title: 'Financial Accounting', stage: 2, semester: '1', mloCount: 5, mlos: Array.from({length: 5}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
 ];
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [programme, setProgramme] = useState<Programme | null>({ name: 'MSc Management S1', weeks: 14 });
-  const [programmePlos, setProgrammePlos] = useState<PLO[]>([]);
+  const [programme, setProgramme] = useState<Programme | null>({ name: 'MSc Management S1', weeks: 14, ploCount: 6 });
   const [modules, setModules] = useState<Module[]>(INITIAL_MODULES);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [nextModuleId, setNextModuleId] = useState(4);
   const [nextAssessmentId, setNextAssessmentId] = useState(1);
 
-  const addProgrammePLO = (plo: PLO) => {
-    setProgrammePlos([...programmePlos, plo]);
-  };
-
-  const removeProgrammePLO = (code: string) => {
-    setProgrammePlos(programmePlos.filter(p => p.code !== code));
-  };
+  // Derived PLOs based on count
+  const programmePlos: PLO[] = React.useMemo(() => {
+    if (!programme) return [];
+    return Array.from({ length: programme.ploCount }, (_, i) => ({
+      code: `PLO${i + 1}`,
+      description: `Programme Learning Outcome ${i + 1}`
+    }));
+  }, [programme]);
 
   const addModule = (m: Omit<Module, 'id' | 'mlos'>) => {
-    setModules([...modules, { ...m, id: nextModuleId, mlos: [] }]);
+    const newMLOs = Array.from({ length: m.mloCount }, (_, i) => ({
+      code: `MLO${i + 1}`,
+      description: `Module Learning Outcome ${i + 1}`
+    }));
+    setModules([...modules, { ...m, id: nextModuleId, mlos: newMLOs }]);
     setNextModuleId(prev => prev + 1);
   };
   
-  const updateModuleMLOs = (moduleId: number, mlos: MLO[]) => {
-    setModules(modules.map(m => m.id === moduleId ? { ...m, mlos } : m));
-  };
-
   const removeModule = (id: number) => {
     setModules(modules.filter(m => m.id !== id));
     setAssessments(assessments.filter(a => a.moduleId !== id));
@@ -109,10 +108,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       modules, 
       assessments, 
       setProgramme, 
-      addProgrammePLO,
-      removeProgrammePLO,
       addModule, 
-      updateModuleMLOs,
       removeModule, 
       addAssessment, 
       removeAssessment 

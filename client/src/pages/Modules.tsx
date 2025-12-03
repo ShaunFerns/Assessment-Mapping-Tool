@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash2, Plus, ArrowRight, Edit } from "lucide-react";
+import { Trash2, Plus, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 
@@ -17,6 +17,7 @@ const formSchema = z.object({
   title: z.string().min(2, "Title required"),
   stage: z.coerce.number().min(1).max(4),
   semester: z.string().min(1, "Semester required"),
+  mloCount: z.coerce.number().min(1).max(12),
 });
 
 export default function Modules() {
@@ -30,6 +31,7 @@ export default function Modules() {
       title: "",
       stage: 1,
       semester: "1",
+      mloCount: 4,
     },
   });
 
@@ -40,6 +42,7 @@ export default function Modules() {
       title: "",
       stage: values.stage, // Keep last used stage
       semester: values.semester, // Keep last used semester
+      mloCount: values.mloCount,
     });
     toast({ title: "Module Added" });
   }
@@ -127,6 +130,21 @@ export default function Modules() {
                     </FormItem>
                   )}
                 />
+                
+                <FormField
+                  control={form.control}
+                  name="mloCount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Number of MLOs</FormLabel>
+                      <FormControl>
+                        <Input type="number" min={1} max={12} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" /> Add Module
                 </Button>
@@ -167,16 +185,11 @@ export default function Modules() {
                       <TableCell>
                         <div>{module.title}</div>
                         <div className="text-xs text-muted-foreground mt-1">
-                          {module.mlos.length} MLOs defined
+                          {module.mlos.length} MLOs
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Link href={`/modules/${module.id}/mlos`}>
-                            <Button variant="outline" size="sm" className="h-8 gap-1">
-                              <Edit className="w-3 h-3" /> MLOs
-                            </Button>
-                          </Link>
                           <Button variant="ghost" size="icon" onClick={() => removeModule(module.id)} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
                             <Trash2 className="w-4 h-4" />
                           </Button>

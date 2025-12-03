@@ -73,7 +73,7 @@ export default function Assessments() {
     <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
       {/* Left: Add Form */}
       <div className="space-y-6">
-        <Card className="shadow-sm border-t-4 border-t-accent-purple sticky top-8 max-h-[calc(100vh-100px)] overflow-y-auto">
+        <Card className="shadow-sm border-t-4 border-t-secondary sticky top-8 max-h-[calc(100vh-100px)] overflow-y-auto">
           <CardHeader>
             <CardTitle className="text-xl font-heading text-primary">Add Assessment</CardTitle>
           </CardHeader>
@@ -198,43 +198,45 @@ export default function Assessments() {
                         <div className="mb-2">
                           <FormLabel>Programme LOs</FormLabel>
                         </div>
-                        <ScrollArea className="h-24 border rounded-md p-2">
+                        <ScrollArea className="h-32 border rounded-md p-2">
                           {programmePlos.length === 0 ? (
                             <div className="text-xs text-muted-foreground text-center py-4">No PLOs defined yet</div>
                           ) : (
-                            programmePlos.map((item) => (
-                              <FormField
-                                key={item.code}
-                                control={form.control}
-                                name="plos"
-                                render={({ field }) => {
-                                  return (
-                                    <FormItem
-                                      key={item.code}
-                                      className="flex flex-row items-start space-x-2 space-y-0 mb-2"
-                                    >
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(item.code)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...field.value, item.code])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) => value !== item.code
+                            <div className="grid grid-cols-3 gap-2">
+                              {programmePlos.map((item) => (
+                                <FormField
+                                  key={item.code}
+                                  control={form.control}
+                                  name="plos"
+                                  render={({ field }) => {
+                                    return (
+                                      <FormItem
+                                        key={item.code}
+                                        className="flex flex-row items-center space-x-2 space-y-0"
+                                      >
+                                        <FormControl>
+                                          <Checkbox
+                                            checked={field.value?.includes(item.code)}
+                                            onCheckedChange={(checked) => {
+                                              return checked
+                                                ? field.onChange([...field.value, item.code])
+                                                : field.onChange(
+                                                    field.value?.filter(
+                                                      (value) => value !== item.code
+                                                    )
                                                   )
-                                                )
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="text-xs font-normal cursor-pointer">
-                                        {item.code} - {item.description}
-                                      </FormLabel>
-                                    </FormItem>
-                                  )
-                                }}
-                              />
-                            ))
+                                            }}
+                                          />
+                                        </FormControl>
+                                        <FormLabel className="text-sm font-normal cursor-pointer">
+                                          {item.code}
+                                        </FormLabel>
+                                      </FormItem>
+                                    )
+                                  }}
+                                />
+                              ))}
+                            </div>
                           )}
                         </ScrollArea>
                         <FormMessage />
@@ -247,48 +249,50 @@ export default function Assessments() {
                     name="mlos"
                     render={() => (
                       <FormItem>
-                         <div className="mb-2">
+                        <div className="mb-2">
                           <FormLabel>Module LOs</FormLabel>
                         </div>
-                        <ScrollArea className="h-24 border rounded-md p-2">
+                        <ScrollArea className="h-32 border rounded-md p-2">
                           {!selectedModule ? (
                              <div className="text-xs text-muted-foreground text-center py-4">Select a module first</div>
                           ) : selectedModule.mlos.length === 0 ? (
-                            <div className="text-xs text-muted-foreground text-center py-4">No MLOs defined for this module</div>
+                            <div className="text-xs text-muted-foreground text-center py-4">No MLOs defined</div>
                           ) : (
-                            selectedModule.mlos.map((item) => (
-                              <FormField
-                                key={item.code}
-                                control={form.control}
-                                name="mlos"
-                                render={({ field }) => {
-                                  return (
-                                    <FormItem
-                                      key={item.code}
-                                      className="flex flex-row items-start space-x-2 space-y-0 mb-2"
-                                    >
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(item.code)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...field.value, item.code])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) => value !== item.code
+                            <div className="grid grid-cols-3 gap-2">
+                              {selectedModule.mlos.map((item) => (
+                                <FormField
+                                  key={item.code}
+                                  control={form.control}
+                                  name="mlos"
+                                  render={({ field }) => {
+                                    return (
+                                      <FormItem
+                                        key={item.code}
+                                        className="flex flex-row items-center space-x-2 space-y-0"
+                                      >
+                                        <FormControl>
+                                          <Checkbox
+                                            checked={field.value?.includes(item.code)}
+                                            onCheckedChange={(checked) => {
+                                              return checked
+                                                ? field.onChange([...field.value, item.code])
+                                                : field.onChange(
+                                                    field.value?.filter(
+                                                      (value) => value !== item.code
+                                                    )
                                                   )
-                                                )
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="text-xs font-normal cursor-pointer">
-                                        {item.code} - {item.description}
-                                      </FormLabel>
-                                    </FormItem>
-                                  )
-                                }}
-                              />
-                            ))
+                                            }}
+                                          />
+                                        </FormControl>
+                                        <FormLabel className="text-sm font-normal cursor-pointer">
+                                          {item.code}
+                                        </FormLabel>
+                                      </FormItem>
+                                    )
+                                  }}
+                                />
+                              ))}
+                            </div>
                           )}
                         </ScrollArea>
                         <FormMessage />
@@ -334,9 +338,6 @@ export default function Assessments() {
                 const isComplete = totalWeight === 100;
                 const isOver = totalWeight > 100;
 
-                // Only show modules that have assessments (or show empty state if preferred, but prompt implies list ordering)
-                // Let's show all modules so user sees what's missing
-                
                 return (
                   <div key={module.id} className="border rounded-lg overflow-hidden">
                     <div className="bg-muted/30 px-4 py-3 flex items-center justify-between border-b">
