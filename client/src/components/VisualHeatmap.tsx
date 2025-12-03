@@ -1,8 +1,23 @@
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
-export default function VisualHeatmap() {
+interface VisualHeatmapProps {
+  stageFilter?: number | 'all';
+  semesterFilter?: string | 'all';
+}
+
+export default function VisualHeatmap({ stageFilter = 1, semesterFilter = '1' }: VisualHeatmapProps) {
   const { programme, modules, assessments } = useAppStore();
+
+  // Filter modules based on props
+  const filteredModules = useMemo(() => {
+    return modules.filter(m => {
+      const stageMatch = stageFilter === 'all' || m.stage === stageFilter;
+      const semesterMatch = semesterFilter === 'all' || m.semester === semesterFilter;
+      return stageMatch && semesterMatch;
+    });
+  }, [modules, stageFilter, semesterFilter]);
 
   if (!programme) return <div>Please set programme details first.</div>;
 
@@ -11,6 +26,10 @@ export default function VisualHeatmap() {
   const getAssessmentsForModuleAndWeek = (moduleId: number, week: number) => {
     return assessments.filter(a => a.moduleId === moduleId && a.week === week);
   };
+  
+  if (filteredModules.length === 0) {
+    return <div className="p-8 text-center text-muted-foreground">No modules found for the selected Stage/Semester.</div>;
+  }
 
   // Helper for block color
   const getBlockColor = (type: string) => {
@@ -39,7 +58,7 @@ export default function VisualHeatmap() {
 
         {/* Module Rows */}
         <div className="space-y-1 mt-2">
-          {modules.map(module => (
+          {filteredModules.map(module => (
             <div key={module.id} className="grid gap-1" 
                  style={{ gridTemplateColumns: `200px repeat(${programme.weeks}, 1fr)` }}>
               

@@ -1,21 +1,33 @@
 import { useState, useRef } from "react";
 import VisualTriangle from "@/components/VisualTriangle";
 import VisualHeatmap from "@/components/VisualHeatmap";
+import PLOCoverage from "@/components/PLOCoverage";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
+import { Printer, Filter } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toPng } from "html-to-image";
 
 export default function Visualisations() {
   const printRef = useRef<HTMLDivElement>(null);
+  const [stageFilter, setStageFilter] = useState<string>("1");
+  const [semesterFilter, setSemesterFilter] = useState<string>("1");
+
+  const getFilterValues = () => {
+    const s = stageFilter === "all" ? "all" : parseInt(stageFilter);
+    const sem = semesterFilter; // 'all', '1', '2', 'A', 'B'
+    return { stage: s, semester: sem } as const;
+  };
+
+  const { stage, semester } = getFilterValues();
 
   const handlePrint = async () => {
     if (printRef.current) {
       try {
         // Calculate the full width required
-        const scrollableContent = printRef.current.querySelector('.overflow-x-auto');
+        const scrollableContent = printRef.current.querySelector('.overflow-x-auto > div');
         const fullWidth = scrollableContent ? scrollableContent.scrollWidth : printRef.current.scrollWidth;
         // Add some padding
         const printWidth = fullWidth + 60;
@@ -73,34 +85,75 @@ export default function Visualisations() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-heading font-bold text-primary">Programme Visualisations</h2>
           <p className="text-muted-foreground">Analyse assessment distribution and student workload.</p>
         </div>
-        <Button variant="outline" onClick={handlePrint} className="gap-2 hidden md:flex">
-          <Printer className="w-4 h-4" /> Print Map
-        </Button>
+        
+        <div className="flex flex-col sm:flex-row gap-2">
+          {/* Filters */}
+          <div className="flex gap-2 bg-white p-1 rounded-md border shadow-sm">
+             <div className="flex items-center px-2 text-xs text-muted-foreground font-medium">
+               <Filter className="w-3 h-3 mr-1" /> Filter:
+             </div>
+             <Select value={stageFilter} onValueChange={setStageFilter}>
+               <SelectTrigger className="h-8 w-[100px] text-xs border-none bg-transparent focus:ring-0">
+                 <SelectValue placeholder="Stage" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="all">All Stages</SelectItem>
+                 <SelectItem value="1">Stage 1</SelectItem>
+                 <SelectItem value="2">Stage 2</SelectItem>
+                 <SelectItem value="3">Stage 3</SelectItem>
+                 <SelectItem value="4">Stage 4</SelectItem>
+               </SelectContent>
+             </Select>
+             <div className="w-px bg-border my-1"></div>
+             <Select value={semesterFilter} onValueChange={setSemesterFilter}>
+               <SelectTrigger className="h-8 w-[100px] text-xs border-none bg-transparent focus:ring-0">
+                 <SelectValue placeholder="Semester" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="all">All Sems</SelectItem>
+                 <SelectItem value="1">Sem 1</SelectItem>
+                 <SelectItem value="2">Sem 2</SelectItem>
+                 <SelectItem value="A">Sem A</SelectItem>
+                 <SelectItem value="B">Sem B</SelectItem>
+               </SelectContent>
+             </Select>
+          </div>
+
+          <Button variant="outline" onClick={handlePrint} className="gap-2 hidden md:flex bg-white">
+            <Printer className="w-4 h-4" /> Print Map
+          </Button>
+        </div>
       </div>
 
       <div ref={printRef} className="bg-[hsl(210,20%,97%)] p-4 -m-4 rounded-xl">
         <Tabs defaultValue="triangle" className="w-full space-y-6">
-          <TabsList className="grid w-full max-w-xl grid-cols-3 bg-primary/5 p-1 rounded-full">
+          <TabsList className="grid w-full max-w-2xl grid-cols-2 md:grid-cols-4 h-auto bg-primary/5 p-1 rounded-xl">
             <TabsTrigger 
               value="triangle" 
-              className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
+              className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white py-2"
             >
               Triangle Timeline
             </TabsTrigger>
             <TabsTrigger 
               value="heatmap" 
-              className="rounded-full data-[state=active]:bg-secondary data-[state=active]:text-white"
+              className="rounded-lg data-[state=active]:bg-secondary data-[state=active]:text-white py-2"
             >
               Assessment Heatmap
             </TabsTrigger>
             <TabsTrigger 
+              value="plo" 
+              className="rounded-lg data-[state=active]:bg-teal-600 data-[state=active]:text-white py-2"
+            >
+              PLO Coverage
+            </TabsTrigger>
+            <TabsTrigger 
               value="analytics" 
-              className="rounded-full data-[state=active]:bg-accent-purple data-[state=active]:text-white"
+              className="rounded-lg data-[state=active]:bg-accent-purple data-[state=active]:text-white py-2"
             >
               Analytics Dashboard
             </TabsTrigger>
@@ -113,7 +166,7 @@ export default function Visualisations() {
                 <CardDescription>Visualising assessment points, weights, and learning outcomes over time.</CardDescription>
               </CardHeader>
               <CardContent className="px-0">
-                <VisualTriangle />
+                <VisualTriangle stageFilter={stage} semesterFilter={semester} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -125,7 +178,19 @@ export default function Visualisations() {
                 <CardDescription>Block view of assessment density and types.</CardDescription>
               </CardHeader>
               <CardContent className="px-0">
-                <VisualHeatmap />
+                <VisualHeatmap stageFilter={stage} semesterFilter={semester} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="plo" className="animate-in fade-in duration-500">
+             <Card className="border-none shadow-none bg-transparent">
+              <CardHeader className="px-0">
+                <CardTitle className="text-xl font-heading text-primary">PLO Coverage Map</CardTitle>
+                <CardDescription>Matrix of modules vs Programme Learning Outcomes covered by assessments.</CardDescription>
+              </CardHeader>
+              <CardContent className="px-0">
+                <PLOCoverage stageFilter={stage} semesterFilter={semester} />
               </CardContent>
             </Card>
           </TabsContent>

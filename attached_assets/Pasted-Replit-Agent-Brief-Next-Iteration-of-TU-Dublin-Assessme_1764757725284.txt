@@ -1,0 +1,176 @@
+Replit Agent Brief – Next Iteration of TU Dublin Assessment Tool
+
+You are extending an existing Flask app that already:
+
+Captures programme, modules, and assessments
+
+Draws triangle timelines, heatmaps, and an analytics page
+
+Looks visually clean and uses TU Dublin navy/teal
+
+Keep existing visual and code style. This brief adds three high-level enhancements:
+
+Support large programmes gracefully
+
+Improve mobile layout (no overlapping controls)
+
+Add a PLO coverage visual using the PLO/MLO mapping we already collect
+
+1. Make the tool work well for large programmes (e.g. 48 modules)
+
+Goal: avoid one giant unreadable grid. Programme teams should be able to work with:
+
+~6 modules per semester
+
+up to 8 semesters (4 stages × 2 semesters)
+
+What to do
+
+Extend the module model
+Add simple fields to each module:
+
+stage (integer, e.g. 1–4)
+
+semester (integer or string, e.g. 1/2 or A/B)
+
+Add filters to visualisation pages
+On the visualisations pages (triangle, heatmap, analytics):
+
+Add dropdowns at the top (controls area):
+
+Stage: All, 1, 2, 3, 4
+
+Semester: All, 1, 2 (or A/B – match what you already use)
+
+When filters are set, only include modules (and their assessments) that match the selected stage/semester.
+
+Default behaviour
+
+When the programme has many modules:
+
+Default to Stage 1, Semester 1 on first load.
+
+Provide “All stages / all semesters” options, but don’t default to “All” if there are more than, say, 10 modules, to avoid the mega-grid problem.
+
+This lets a 48-module programme be viewed in manageable slices, while analytics can still aggregate the whole programme when needed.
+
+2. Improve mobile layout (no overlapping text/buttons)
+
+Goal: the app should be usable on phones without elements overlapping, especially on programme visualisation pages.
+
+What to do
+
+Controls bar responsive layout
+
+Wrap the main filters/buttons at the top of visualisation pages in a flex container.
+
+Desktop:
+
+controls in a single row with gaps.
+
+Mobile (e.g. < 768px):
+
+same controls stack vertically (column layout) so buttons and select elements never overlap.
+
+Scrollable timeline / heatmap
+
+Ensure the main timeline/heatmap grid is placed in a wrapper that:
+
+allows horizontal scrolling (overflow-x: auto)
+
+has a minimum width so columns don’t get squashed too small.
+
+This avoids shrinking fonts too much on mobile and keeps the grid readable.
+
+Chart cards responsive layout
+
+On the analytics page, keep the card layout:
+
+Desktop: multiple columns (using CSS grid like now).
+
+Mobile: single column (one chart per row) so charts never overlap text.
+
+The aim is to keep the existing look and feel, just with responsive tweaks: flex-wrap, media queries, and scrollable containers where needed.
+
+3. Add a PLO coverage visual (replace the spreadsheet view)
+
+Goal: programme teams currently use a spreadsheet to show:
+
+Which modules cover which Programme Learning Outcomes (PLOs)
+
+How assessments map to PLOs and MLOs
+
+We are already collecting PLO/MLO mapping per assessment. Use that to add a PLO coverage visual.
+
+3.1 Data assumptions / prep
+
+Assume that for each assessment we already store:
+
+assessment["plo"] → one or more PLO codes (e.g. "PLO1, PLO3")
+
+assessment["mlo"] → one or more MLO codes (e.g. "MLO1, MLO2" or similar)
+
+If they are currently free text:
+
+For this step, you can treat them as comma-separated codes, trimming whitespace and ignoring empty values.
+
+Derive:
+
+A sorted unique list of PLO codes used in the programme.
+
+A mapping of module → which PLOs appear in its assessments.
+
+3.2 New visual: PLO vs Module coverage heatmap
+
+Add a new tab/section under Visualisations (or inside the Analytics page) called:
+
+“PLO Coverage”
+
+Behaviour
+
+Filters (top of page):
+
+Stage (All/1–4)
+
+Semester (All/1–2)
+
+Show a matrix / heatmap with:
+
+Rows: PLO codes (e.g. PLO1, PLO2, …)
+
+Columns: module codes (e.g. MOD101, MOD201, etc.)
+
+Cell value: number of assessments in that module mapped to that PLO
+(or total weighting, if you prefer that – choose one and keep it consistent.)
+
+Visual
+
+Use Plotly (or a simple HTML table with conditional colouring).
+
+Colour intensity increases as the count/weight increases:
+
+0 = blank or very light
+
+1+ = progressively stronger colour
+
+Add a short text explanation above the chart so programme teams know:
+
+“Each cell shows how many assessments in that module are mapped to this PLO.”
+
+Integration
+
+Link to this visual from:
+
+/visual/analytics (e.g. a “View PLO coverage heatmap” button), or
+
+As a sixth card on the Analytics page if screen space allows.
+
+This directly replaces the spreadsheet people currently build by hand.
+
+4. Keep everything else as-is
+
+Don’t remove existing visuals (triangle, heatmap, analytics).
+
+Don’t change the overall colour scheme or layout beyond the mobile/responsive tweaks.
+
+Keep using the current unit tests pattern, and add tests only for new helper functions if you create them (e.g. PLO aggregation).

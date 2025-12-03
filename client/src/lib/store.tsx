@@ -9,6 +9,8 @@ export type Module = {
   id: number;
   code: string;
   title: string;
+  stage: number;
+  semester: string;
 };
 
 export type AssessmentType = 'Delivery' | 'Presentation' | 'Exam' | 'Report' | 'Case Study';
@@ -41,9 +43,9 @@ const AppContext = createContext<AppState | undefined>(undefined);
 
 // Initial Dummy Data for testing if user skips setup
 const INITIAL_MODULES: Module[] = [
-  { id: 1, code: 'MGMT101', title: 'Principles of Management' },
-  { id: 2, code: 'MKTG202', title: 'Marketing Strategy' },
-  { id: 3, code: 'FIN303', title: 'Financial Accounting' },
+  { id: 1, code: 'MGMT101', title: 'Principles of Management', stage: 1, semester: '1' },
+  { id: 2, code: 'MKTG202', title: 'Marketing Strategy', stage: 1, semester: '2' },
+  { id: 3, code: 'FIN303', title: 'Financial Accounting', stage: 2, semester: '1' },
 ];
 
 export function AppProvider({ children }: { children: ReactNode }) {

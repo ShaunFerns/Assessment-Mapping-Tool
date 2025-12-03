@@ -1,8 +1,23 @@
 import { useAppStore, Assessment } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
-export default function VisualTriangle() {
+interface VisualTriangleProps {
+  stageFilter?: number | 'all';
+  semesterFilter?: string | 'all';
+}
+
+export default function VisualTriangle({ stageFilter = 1, semesterFilter = '1' }: VisualTriangleProps) {
   const { programme, modules, assessments } = useAppStore();
+
+  // Filter modules based on props
+  const filteredModules = useMemo(() => {
+    return modules.filter(m => {
+      const stageMatch = stageFilter === 'all' || m.stage === stageFilter;
+      const semesterMatch = semesterFilter === 'all' || m.semester === semesterFilter;
+      return stageMatch && semesterMatch;
+    });
+  }, [modules, stageFilter, semesterFilter]);
 
   if (!programme) return <div>Please set programme details first.</div>;
 
@@ -11,6 +26,10 @@ export default function VisualTriangle() {
   const getAssessmentsForModuleAndWeek = (moduleId: number, week: number) => {
     return assessments.filter(a => a.moduleId === moduleId && a.week === week);
   };
+
+  if (filteredModules.length === 0) {
+    return <div className="p-8 text-center text-muted-foreground">No modules found for the selected Stage/Semester.</div>;
+  }
 
   // Helper to get color class
   const getTypeColor = (type: string) => {
@@ -50,7 +69,7 @@ export default function VisualTriangle() {
         </div>
 
         {/* Module Rows */}
-        {modules.map(module => (
+        {filteredModules.map(module => (
           <div key={module.id} className="grid gap-0 group hover:bg-muted/10 transition-colors relative" 
                style={{ gridTemplateColumns: `200px repeat(${programme.weeks}, 1fr)` }}>
             

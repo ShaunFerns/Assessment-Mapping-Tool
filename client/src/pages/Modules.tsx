@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,6 +15,8 @@ import { Link } from "wouter";
 const formSchema = z.object({
   code: z.string().min(2, "Code required"),
   title: z.string().min(2, "Title required"),
+  stage: z.coerce.number().min(1).max(4),
+  semester: z.string().min(1, "Semester required"),
 });
 
 export default function Modules() {
@@ -25,12 +28,19 @@ export default function Modules() {
     defaultValues: {
       code: "",
       title: "",
+      stage: 1,
+      semester: "1",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     addModule(values);
-    form.reset();
+    form.reset({
+      code: "",
+      title: "",
+      stage: values.stage, // Keep last used stage
+      semester: values.semester, // Keep last used semester
+    });
     toast({ title: "Module Added" });
   }
 
@@ -45,6 +55,52 @@ export default function Modules() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="stage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Stage</FormLabel>
+                        <Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={field.value.toString()}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select stage" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {[1, 2, 3, 4].map((s) => (
+                              <SelectItem key={s} value={s.toString()}>Stage {s}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="semester"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Semester</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select sem" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {["1", "2", "A", "B"].map((s) => (
+                              <SelectItem key={s} value={s}>{s}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
                   name="code"
@@ -95,14 +151,18 @@ export default function Modules() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[80px]">Stage</TableHead>
+                    <TableHead className="w-[80px]">Sem</TableHead>
                     <TableHead className="w-[100px]">Code</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {modules.map((module) => (
+                  {modules.sort((a, b) => a.stage - b.stage || a.semester.localeCompare(b.semester)).map((module) => (
                     <TableRow key={module.id}>
+                      <TableCell className="text-muted-foreground">S{module.stage}</TableCell>
+                      <TableCell className="text-muted-foreground">{module.semester}</TableCell>
                       <TableCell className="font-bold text-primary">{module.code}</TableCell>
                       <TableCell>{module.title}</TableCell>
                       <TableCell className="text-right">
