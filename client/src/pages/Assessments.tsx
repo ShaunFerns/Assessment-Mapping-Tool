@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState, useEffect } from "react";
 
 const formSchema = z.object({
   moduleId: z.coerce.number().min(1, "Select a module"),
@@ -27,8 +28,9 @@ const formSchema = z.object({
 });
 
 export default function Assessments() {
-  const { modules, programme, assessments, addAssessment, removeAssessment, programmePlos } = useAppStore();
+  const { modules, programme, assessments, addAssessment, removeAssessment, programmePlos, updateModuleMLOCount } = useAppStore();
   const { toast } = useToast();
+  const [mloCount, setMloCount] = useState(6);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,6 +47,20 @@ export default function Assessments() {
 
   const selectedModuleId = form.watch("moduleId");
   const selectedModule = modules.find(m => m.id === Number(selectedModuleId));
+
+  useEffect(() => {
+    if (selectedModule) {
+      setMloCount(Math.max(6, selectedModule.mloCount));
+    }
+  }, [selectedModule]);
+
+  const handleAddMlo = () => {
+    const newCount = mloCount + 1;
+    setMloCount(newCount);
+    if (selectedModule) {
+      updateModuleMLOCount(selectedModule.id, newCount);
+    }
+  };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     addAssessment({
@@ -249,15 +265,21 @@ export default function Assessments() {
                     name="mlos"
                     render={() => (
                       <FormItem>
-                        <div className="mb-2">
+                        <div className="flex items-center justify-between mb-2">
                           <FormLabel>Module LOs</FormLabel>
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-6 text-xs px-2"
+                            onClick={handleAddMlo}
+                          >
+                            <Plus className="w-3 h-3 mr-1" /> Add MLO
+                          </Button>
                         </div>
                         <ScrollArea className="h-32 border rounded-md p-2">
-                          {!selectedModule ? (
-                             <div className="text-xs text-muted-foreground text-center py-4">Select a module first</div>
-                          ) : (
                             <div className="grid grid-cols-3 gap-2">
-                              {Array.from({length: 6}, (_, i) => `MLO${i+1}`).map((code) => (
+                              {Array.from({length: mloCount}, (_, i) => `MLO${i+1}`).map((code) => (
                                 <FormField
                                   key={code}
                                   control={form.control}
@@ -291,7 +313,6 @@ export default function Assessments() {
                                 />
                               ))}
                             </div>
-                          )}
                         </ScrollArea>
                         <FormMessage />
                       </FormItem>
