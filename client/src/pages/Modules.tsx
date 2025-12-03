@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash2, Plus, ArrowRight } from "lucide-react";
+import { Trash2, Plus, ArrowRight, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 
@@ -164,11 +164,23 @@ export default function Modules() {
                       <TableCell className="text-muted-foreground">S{module.stage}</TableCell>
                       <TableCell className="text-muted-foreground">{module.semester}</TableCell>
                       <TableCell className="font-bold text-primary">{module.code}</TableCell>
-                      <TableCell>{module.title}</TableCell>
+                      <TableCell>
+                        <div>{module.title}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {module.mlos.length} MLOs defined
+                        </div>
+                      </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => removeModule(module.id)} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <div className="flex items-center justify-end gap-2">
+                          <Link href={`/modules/${module.id}/mlos`}>
+                            <Button variant="outline" size="sm" className="h-8 gap-1">
+                              <Edit className="w-3 h-3" /> MLOs
+                            </Button>
+                          </Link>
+                          <Button variant="ghost" size="icon" onClick={() => removeModule(module.id)} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

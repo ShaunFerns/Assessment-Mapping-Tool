@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -13,6 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Trash2, Plus, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const formSchema = z.object({
   moduleId: z.coerce.number().min(1, "Select a module"),
@@ -20,13 +21,13 @@ const formSchema = z.object({
   weight: z.coerce.number().min(0).max(100),
   atype: z.enum(['Delivery', 'Presentation', 'Exam', 'Report', 'Case Study']),
   mode: z.enum(['Group', 'Individual']),
-  plo: z.string().optional(),
-  mlo: z.string().optional(),
+  plos: z.array(z.string()),
+  mlos: z.array(z.string()),
   ga: z.string().optional(),
 });
 
 export default function Assessments() {
-  const { modules, programme, assessments, addAssessment, removeAssessment } = useAppStore();
+  const { modules, programme, assessments, addAssessment, removeAssessment, programmePlos } = useAppStore();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -36,17 +37,18 @@ export default function Assessments() {
       weight: 20,
       atype: 'Report',
       mode: 'Individual',
-      plo: '',
-      mlo: '',
+      plos: [],
+      mlos: [],
       ga: '',
     },
   });
 
+  const selectedModuleId = form.watch("moduleId");
+  const selectedModule = modules.find(m => m.id === selectedModuleId);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     addAssessment({
         ...values, 
-        plo: values.plo || "",
-        mlo: values.mlo || "",
         ga: values.ga || ""
     });
     // Keep some values for easier subsequent entry
@@ -56,8 +58,8 @@ export default function Assessments() {
         weight: 20,
         atype: 'Report',
         mode: 'Individual',
-        plo: '', 
-        mlo: '', 
+        plos: [], 
+        mlos: [], 
         ga: ''
     });
     toast({ title: "Assessment Added" });
@@ -84,7 +86,10 @@ export default function Assessments() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Module</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                      <Select onValueChange={(val) => {
+                        field.onChange(val);
+                        form.setValue("mlos", []); // Reset MLOs when module changes
+                      }} defaultValue={field.value?.toString()}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select module" />
@@ -184,19 +189,113 @@ export default function Assessments() {
                   )}
                 />
 
-                <div className="space-y-2 pt-2 border-t border-border">
-                  <FormField control={form.control} name="plo" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs text-muted-foreground">Prog. Learning Outcome (PLO)</FormLabel>
-                      <FormControl><Input placeholder="Short code/text..." {...field} className="h-8 text-sm" /></FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="mlo" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs text-muted-foreground">Module Learning Outcome (MLO)</FormLabel>
-                      <FormControl><Input placeholder="Short code/text..." {...field} className="h-8 text-sm" /></FormControl>
-                    </FormItem>
-                  )} />
+                <div className="space-y-4 pt-2 border-t border-border">
+                  <FormField
+                    control={form.control}
+                    name="plos"
+                    render={() => (
+                      <FormItem>
+                        <div className="mb-2">
+                          <FormLabel>Programme LOs</FormLabel>
+                        </div>
+                        <ScrollArea className="h-24 border rounded-md p-2">
+                          {programmePlos.length === 0 ? (
+                            <div className="text-xs text-muted-foreground text-center py-4">No PLOs defined yet</div>
+                          ) : (
+                            programmePlos.map((item) => (
+                              <FormField
+                                key={item.code}
+                                control={form.control}
+                                name="plos"
+                                render={({ field }) => {
+                                  return (
+                                    <FormItem
+                                      key={item.code}
+                                      className="flex flex-row items-start space-x-2 space-y-0 mb-2"
+                                    >
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(item.code)}
+                                          onCheckedChange={(checked) => {
+                                            return checked
+                                              ? field.onChange([...field.value, item.code])
+                                              : field.onChange(
+                                                  field.value?.filter(
+                                                    (value) => value !== item.code
+                                                  )
+                                                )
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="text-xs font-normal cursor-pointer">
+                                        {item.code} - {item.description}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )
+                                }}
+                              />
+                            ))
+                          )}
+                        </ScrollArea>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="mlos"
+                    render={() => (
+                      <FormItem>
+                         <div className="mb-2">
+                          <FormLabel>Module LOs</FormLabel>
+                        </div>
+                        <ScrollArea className="h-24 border rounded-md p-2">
+                          {!selectedModule ? (
+                             <div className="text-xs text-muted-foreground text-center py-4">Select a module first</div>
+                          ) : selectedModule.mlos.length === 0 ? (
+                            <div className="text-xs text-muted-foreground text-center py-4">No MLOs defined for this module</div>
+                          ) : (
+                            selectedModule.mlos.map((item) => (
+                              <FormField
+                                key={item.code}
+                                control={form.control}
+                                name="mlos"
+                                render={({ field }) => {
+                                  return (
+                                    <FormItem
+                                      key={item.code}
+                                      className="flex flex-row items-start space-x-2 space-y-0 mb-2"
+                                    >
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(item.code)}
+                                          onCheckedChange={(checked) => {
+                                            return checked
+                                              ? field.onChange([...field.value, item.code])
+                                              : field.onChange(
+                                                  field.value?.filter(
+                                                    (value) => value !== item.code
+                                                  )
+                                                )
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="text-xs font-normal cursor-pointer">
+                                        {item.code} - {item.description}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )
+                                }}
+                              />
+                            ))
+                          )}
+                        </ScrollArea>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField control={form.control} name="ga" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs text-muted-foreground">Graduate Attribute (GA)</FormLabel>

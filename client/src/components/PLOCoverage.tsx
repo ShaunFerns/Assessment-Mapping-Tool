@@ -8,7 +8,7 @@ interface PLOCoverageProps {
 }
 
 export default function PLOCoverage({ stageFilter = 1, semesterFilter = '1' }: PLOCoverageProps) {
-  const { modules, assessments } = useAppStore();
+  const { modules, assessments, programmePlos } = useAppStore();
 
   // Filter modules based on props
   const filteredModules = useMemo(() => {
@@ -19,28 +19,28 @@ export default function PLOCoverage({ stageFilter = 1, semesterFilter = '1' }: P
     });
   }, [modules, stageFilter, semesterFilter]);
 
-  // Get all unique PLOs from ALL assessments (to keep matrix consistent regardless of filter, or maybe filtered? Brief says "Derive A sorted unique list of PLO codes used in the programme")
-  // Let's derive it from the filtered view to keep it relevant to what's being looked at, or maybe globally? 
-  // Usually for mapping you want to see the whole set, but if filtering by stage, maybe just stage PLOs?
-  // Let's stick to global PLOs found in assessments to ensure the "rows" are consistent if they toggle filters, 
-  // or maybe better: only show PLOs that actually exist in the data.
-  // Let's use all PLOs found in any assessment to be safe.
-  
+  // Use programme PLOs instead of deriving from assessments to ensure complete list
   const allPLOs = useMemo(() => {
-    const plos = new Set<string>();
-    assessments.forEach(a => {
-      if (a.plo) {
-        // Split by comma if multiple
-        a.plo.split(',').forEach(p => plos.add(p.trim()));
-      }
-    });
-    return Array.from(plos).sort();
-  }, [assessments]);
+    // If no programme PLOs defined yet, fallback to deriving from assessments for legacy support
+    if (programmePlos.length === 0) {
+      const plos = new Set<string>();
+      assessments.forEach(a => {
+        if (a.plos) {
+          a.plos.forEach(p => plos.add(p));
+        } else if (a.plo) {
+          // Fallback for old data structure
+          a.plo.split(',').forEach(p => plos.add(p.trim()));
+        }
+      });
+      return Array.from(plos).sort();
+    }
+    return programmePlos.map(p => p.code).sort();
+  }, [assessments, programmePlos]);
 
   if (allPLOs.length === 0) {
     return (
       <div className="p-8 text-center text-muted-foreground bg-muted/20 rounded-xl border border-dashed border-border">
-        No PLO data found in assessments. Add PLO codes to assessments to see this map.
+        No PLO data found. Define Programme Learning Outcomes in the Programme page.
       </div>
     );
   }
@@ -53,30 +53,31 @@ export default function PLOCoverage({ stageFilter = 1, semesterFilter = '1' }: P
     );
   }
 
-  // Helper to get count of assessments for a module that hit a specific PLO
-  const getCount = (moduleId: number, plo: string) => {
-    return assessments.filter(a => {
-      if (a.moduleId !== moduleId) return false;
-      if (!a.plo) return false;
-      const aPlos = a.plo.split(',').map(p => p.trim());
-      return aPlos.includes(plo);
-    }).length;
+  // Helper to get total weight of assessments for a module that hit a specific PLO
+  const getWeight = (moduleId: number, plo: string) => {
+    return assessments
+      .filter(a => a.moduleId === moduleId)
+      .reduce((sum, a) => {
+        const hasPlo = a.plos?.includes(plo) || (a.plo && a.plo.includes(plo));
+        return hasPlo ? sum + a.weight : sum;
+      }, 0);
   };
 
-  // Helper for heat intensity color
-  const getIntensityColor = (count: number) => {
-    if (count === 0) return 'bg-white';
-    if (count === 1) return 'bg-teal-100 text-teal-900';
-    if (count === 2) return 'bg-teal-300 text-teal-900';
-    if (count >= 3) return 'bg-teal-500 text-white';
-    return 'bg-teal-100';
+  // Helper for heat intensity color based on weight
+  const getIntensityColor = (weight: number) => {
+    if (weight === 0) return 'bg-white';
+    if (weight <= 20) return 'bg-[#e6f7f7] text-teal-900'; // Very Light Teal
+    if (weight <= 40) return 'bg-[#b3e6e6] text-teal-900'; // Light Teal
+    if (weight <= 60) return 'bg-[#80d4d4] text-teal-900'; // Medium Teal
+    if (weight <= 80) return 'bg-[#4dc3c3] text-white'; // Strong Teal
+    return 'bg-[#00A6A6] text-white'; // TU Dublin Teal
   };
 
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm border border-border overflow-x-auto">
       <div className="min-w-[800px]">
         <div className="mb-4 text-sm text-muted-foreground">
-          Each cell shows how many assessments in that module are mapped to the specific Programme Learning Outcome (PLO).
+          <span className="font-bold">X</span> = module assesses this PLO (≥1 assessment). Colour intensity reflects total assessment weighting mapped to that PLO.
         </div>
 
         <div className="border border-border rounded-lg overflow-hidden">
@@ -99,16 +100,17 @@ export default function PLOCoverage({ stageFilter = 1, semesterFilter = '1' }: P
                 {plo}
               </div>
               {filteredModules.map(m => {
-                const count = getCount(m.id, plo);
+                const weight = getWeight(m.id, plo);
                 return (
                   <div 
                     key={`${m.id}-${plo}`} 
                     className={cn(
                       "flex-1 min-w-[100px] p-2 text-center text-sm flex items-center justify-center border-r border-border last:border-r-0 transition-colors",
-                      getIntensityColor(count)
+                      getIntensityColor(weight)
                     )}
+                    title={`Weight: ${weight}%`}
                   >
-                    {count > 0 ? count : ''}
+                    {weight > 0 ? 'X' : ''}
                   </div>
                 );
               })}
