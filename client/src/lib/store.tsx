@@ -63,12 +63,73 @@ const INITIAL_MODULES: Module[] = [
   { id: 3, code: 'FIN303', title: 'Financial Accounting', stage: 2, semester: '1', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
 ];
 
+const INITIAL_ASSESSMENTS: Assessment[] = [
+  // MGMT101 Assessments
+  { 
+    id: 1, 
+    moduleId: 1, 
+    week: 6, 
+    weight: 40, 
+    atype: 'Report', 
+    mode: 'Individual', 
+    plos: ['PLO1', 'PLO2'], 
+    mlos: ['MLO1', 'MLO2'],
+    ga: ['People']
+  },
+  { 
+    id: 2, 
+    moduleId: 1, 
+    week: 14, 
+    weight: 60, 
+    atype: 'Exam', 
+    mode: 'Individual', 
+    plos: ['PLO1', 'PLO3'], 
+    mlos: ['MLO3', 'MLO4'],
+    ga: ['Partnership']
+  },
+  // MKTG202 Assessments
+  { 
+    id: 3, 
+    moduleId: 2, 
+    week: 8, 
+    weight: 30, 
+    atype: 'Presentation', 
+    mode: 'Group', 
+    plos: ['PLO2', 'PLO4'], 
+    mlos: ['MLO1', 'MLO3'],
+    ga: ['People', 'Partnership']
+  },
+  { 
+    id: 4, 
+    moduleId: 2, 
+    week: 12, 
+    weight: 70, 
+    atype: 'Case Study', 
+    mode: 'Individual', 
+    plos: ['PLO4', 'PLO5'], 
+    mlos: ['MLO2', 'MLO4'],
+    ga: ['Planet']
+  },
+  // FIN303 Assessments
+  { 
+    id: 5, 
+    moduleId: 3, 
+    week: 14, 
+    weight: 100, 
+    atype: 'Exam', 
+    mode: 'Individual', 
+    plos: ['PLO3', 'PLO6'], 
+    mlos: ['MLO1', 'MLO2', 'MLO3', 'MLO4', 'MLO5'],
+    ga: []
+  }
+];
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [programme, setProgramme] = useState<Programme | null>({ name: 'MSc Management S1', weeks: 14, ploCount: 6 });
   const [modules, setModules] = useState<Module[]>(INITIAL_MODULES);
-  const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [assessments, setAssessments] = useState<Assessment[]>(INITIAL_ASSESSMENTS);
   const [nextModuleId, setNextModuleId] = useState(4);
-  const [nextAssessmentId, setNextAssessmentId] = useState(1);
+  const [nextAssessmentId, setNextAssessmentId] = useState(6);
 
   // Derived PLOs based on count
   const programmePlos: PLO[] = React.useMemo(() => {
