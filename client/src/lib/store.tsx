@@ -3,6 +3,8 @@ import React, { createContext, useContext, useState, ReactNode, useMemo } from '
 export type Programme = {
   id: number;
   name: string;
+  code?: string;
+  department?: string;
   weeks: number;
   ploCount: number;
 };
@@ -62,7 +64,14 @@ interface AppState {
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
-const INITIAL_PROGRAMME: Programme = { id: 1, name: 'MSc Management S1', weeks: 14, ploCount: 6 };
+const INITIAL_PROGRAMME: Programme = { 
+  id: 1, 
+  name: 'BSc (Hons) in Horticulture', 
+  code: 'HORT-2024',
+  department: 'Science & Health',
+  weeks: 14, 
+  ploCount: 6 
+};
 
 // Initial Dummy Data for testing if user skips setup
 const INITIAL_MODULES: Module[] = [

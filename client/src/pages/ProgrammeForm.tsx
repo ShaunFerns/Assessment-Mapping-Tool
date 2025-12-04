@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, "Programme name must be at least 2 characters."),
+  code: z.string().optional(),
+  department: z.string().optional(),
   weeks: z.coerce.number().min(1).max(52),
   ploCount: z.coerce.number().min(1).max(20),
 });
@@ -24,6 +26,8 @@ export default function ProgrammeForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: programme?.name || "",
+      code: programme?.code || "",
+      department: programme?.department || "",
       weeks: programme?.weeks || 14,
       ploCount: programme?.ploCount || 6,
     },
@@ -62,6 +66,36 @@ export default function ProgrammeForm() {
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Programme Code (Optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. HORT-2024" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="department"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Department (Optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Science & Health" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               
               <div className="grid grid-cols-2 gap-6">
                 <FormField
