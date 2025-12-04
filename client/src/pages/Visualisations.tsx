@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useAppStore } from "@/lib/store";
 import VisualTriangle from "@/components/VisualTriangle";
 import VisualHeatmap from "@/components/VisualHeatmap";
 import PLOCoverage from "@/components/PLOCoverage";
@@ -11,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toPng } from "html-to-image";
 
 export default function Visualisations() {
+  const { programme, programmes, selectProgramme } = useAppStore();
   const printRef = useRef<HTMLDivElement>(null);
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [semesterFilter, setSemesterFilter] = useState<string>("all");
@@ -97,6 +99,24 @@ export default function Visualisations() {
              <div className="flex items-center px-2 text-xs text-muted-foreground font-medium">
                <Filter className="w-3 h-3 mr-1" /> Filter:
              </div>
+             
+             {/* Programme Filter */}
+             <Select 
+               value={programme?.id.toString()} 
+               onValueChange={(val) => selectProgramme(parseInt(val))}
+             >
+               <SelectTrigger className="h-8 w-[160px] text-xs border-none bg-transparent focus:ring-0 font-bold text-primary">
+                 <SelectValue placeholder="Select Programme" />
+               </SelectTrigger>
+               <SelectContent>
+                 {programmes.map(p => (
+                   <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
+             
+             <div className="w-px bg-border my-1"></div>
+
              <Select value={stageFilter} onValueChange={setStageFilter}>
                <SelectTrigger className="h-8 w-[100px] text-xs border-none bg-transparent focus:ring-0">
                  <SelectValue placeholder="Stage" />
