@@ -26,9 +26,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 className="h-10 w-10 cursor-pointer hover:opacity-90 transition-opacity object-contain"
               />
             </Link>
-            <h1 className="font-heading font-bold text-lg tracking-tight hidden sm:block">
-              Assessment Mapping Tool
-            </h1>
+            <Link href="/">
+              <h1 className="font-heading font-bold text-lg tracking-tight hidden sm:block cursor-pointer hover:opacity-90 transition-opacity">
+                Assessment Mapping Tool
+              </h1>
+            </Link>
           </div>
 
           <nav className="flex items-center gap-1">
