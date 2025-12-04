@@ -3,6 +3,7 @@ import { AppProvider } from "./lib/store";
 import { Toaster } from "@/components/ui/toaster";
 import Layout from "@/components/layout";
 import Home from "@/pages/Home";
+import ProgrammeList from "@/pages/ProgrammeList";
 import ProgrammeForm from "@/pages/ProgrammeForm";
 import Modules from "@/pages/Modules";
 import Assessments from "@/pages/Assessments";
@@ -14,7 +15,9 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={Home} />
-        <Route path="/programme" component={ProgrammeForm} />
+        <Route path="/programme" component={ProgrammeList} />
+        <Route path="/programme/select" component={ProgrammeList} />
+        <Route path="/programme/edit" component={ProgrammeForm} />
         <Route path="/modules" component={Modules} />
         <Route path="/assessments" component={Assessments} />
         <Route path="/visualisations" component={Visualisations} />
