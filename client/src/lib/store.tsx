@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 
 export type Programme = {
+  id: number;
   name: string;
   weeks: number;
   ploCount: number;
@@ -18,6 +19,7 @@ export type MLO = {
 
 export type Module = {
   id: number;
+  programmeId: number;
   code: string;
   title: string;
   stage: number;
@@ -43,11 +45,15 @@ export type Assessment = {
 
 interface AppState {
   programme: Programme | null;
+  programmes: Programme[];
   programmePlos: PLO[]; // Derived
   modules: Module[];
   assessments: Assessment[];
-  setProgramme: (p: Programme) => void;
-  addModule: (m: Omit<Module, 'id' | 'mlos'>) => void;
+  setProgramme: (p: Omit<Programme, 'id'>) => void; // Updates current programme
+  addProgramme: (p: Omit<Programme, 'id'>) => void;
+  selectProgramme: (id: number) => void;
+  deleteProgramme: (id: number) => void;
+  addModule: (m: Omit<Module, 'id' | 'mlos' | 'programmeId'>) => void;
   updateModuleMLOCount: (moduleId: number, count: number) => void;
   removeModule: (id: number) => void;
   addAssessment: (a: Omit<Assessment, 'id'>) => void;
@@ -56,11 +62,13 @@ interface AppState {
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
+const INITIAL_PROGRAMME: Programme = { id: 1, name: 'MSc Management S1', weeks: 14, ploCount: 6 };
+
 // Initial Dummy Data for testing if user skips setup
 const INITIAL_MODULES: Module[] = [
-  { id: 1, code: 'MGMT101', title: 'Principles of Management', stage: 1, semester: '1', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
-  { id: 2, code: 'MKTG202', title: 'Marketing Strategy', stage: 1, semester: '2', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
-  { id: 3, code: 'FIN303', title: 'Financial Accounting', stage: 2, semester: '1', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
+  { id: 1, programmeId: 1, code: 'MGMT101', title: 'Principles of Management', stage: 1, semester: '1', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
+  { id: 2, programmeId: 1, code: 'MKTG202', title: 'Marketing Strategy', stage: 1, semester: '2', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
+  { id: 3, programmeId: 1, code: 'FIN303', title: 'Financial Accounting', stage: 2, semester: '1', mloCount: 6, mlos: Array.from({length: 6}, (_, i) => ({code: `MLO${i+1}`, description: `Module Learning Outcome ${i+1}`})) },
 ];
 
 const INITIAL_ASSESSMENTS: Assessment[] = [
@@ -125,14 +133,26 @@ const INITIAL_ASSESSMENTS: Assessment[] = [
 ];
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [programme, setProgramme] = useState<Programme | null>({ name: 'MSc Management S1', weeks: 14, ploCount: 6 });
-  const [modules, setModules] = useState<Module[]>(INITIAL_MODULES);
+  const [programmes, setProgrammes] = useState<Programme[]>([INITIAL_PROGRAMME]);
+  const [selectedProgrammeId, setSelectedProgrammeId] = useState<number | null>(1);
+  
+  const [allModules, setAllModules] = useState<Module[]>(INITIAL_MODULES);
   const [assessments, setAssessments] = useState<Assessment[]>(INITIAL_ASSESSMENTS);
+  
+  const [nextProgrammeId, setNextProgrammeId] = useState(2);
   const [nextModuleId, setNextModuleId] = useState(4);
   const [nextAssessmentId, setNextAssessmentId] = useState(6);
 
+  const programme = useMemo(() => 
+    programmes.find(p => p.id === selectedProgrammeId) || null
+  , [programmes, selectedProgrammeId]);
+
+  const modules = useMemo(() => 
+    allModules.filter(m => m.programmeId === selectedProgrammeId)
+  , [allModules, selectedProgrammeId]);
+
   // Derived PLOs based on count
-  const programmePlos: PLO[] = React.useMemo(() => {
+  const programmePlos: PLO[] = useMemo(() => {
     if (!programme) return [];
     return Array.from({ length: programme.ploCount }, (_, i) => ({
       code: `PLO${i + 1}`,
@@ -140,18 +160,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }));
   }, [programme]);
 
-  const addModule = (m: Omit<Module, 'id' | 'mlos'>) => {
+  const setProgramme = (p: Omit<Programme, 'id'>) => {
+    if (selectedProgrammeId) {
+      setProgrammes(programmes.map(prog => 
+        prog.id === selectedProgrammeId ? { ...prog, ...p } : prog
+      ));
+    } else {
+      // If no programme selected, create one (fallback)
+      addProgramme(p);
+    }
+  };
+
+  const addProgramme = (p: Omit<Programme, 'id'>) => {
+    const newId = nextProgrammeId;
+    const newProgramme = { ...p, id: newId };
+    setProgrammes([...programmes, newProgramme]);
+    setNextProgrammeId(prev => prev + 1);
+    setSelectedProgrammeId(newId);
+  };
+
+  const selectProgramme = (id: number) => {
+    setSelectedProgrammeId(id);
+  };
+
+  const deleteProgramme = (id: number) => {
+    setProgrammes(programmes.filter(p => p.id !== id));
+    if (selectedProgrammeId === id) {
+      setSelectedProgrammeId(null);
+    }
+    // Could also cleanup modules/assessments here
+    const modulesToDelete = allModules.filter(m => m.programmeId === id);
+    const moduleIdsToDelete = modulesToDelete.map(m => m.id);
+    setAllModules(allModules.filter(m => m.programmeId !== id));
+    setAssessments(assessments.filter(a => !moduleIdsToDelete.includes(a.moduleId)));
+  };
+
+  const addModule = (m: Omit<Module, 'id' | 'mlos' | 'programmeId'>) => {
+    if (!selectedProgrammeId) return;
+    
     const mloCount = 6; // Enforce 6 MLOs
     const newMLOs = Array.from({ length: mloCount }, (_, i) => ({
       code: `MLO${i + 1}`,
       description: `Module Learning Outcome ${i + 1}`
     }));
-    setModules([...modules, { ...m, mloCount, id: nextModuleId, mlos: newMLOs }]);
+    setAllModules([...allModules, { ...m, mloCount, id: nextModuleId, mlos: newMLOs, programmeId: selectedProgrammeId }]);
     setNextModuleId(prev => prev + 1);
   };
   
   const updateModuleMLOCount = (moduleId: number, count: number) => {
-    setModules(modules.map(m => {
+    setAllModules(allModules.map(m => {
       if (m.id === moduleId) {
         const newMLOs = Array.from({ length: count }, (_, i) => ({
           code: `MLO${i + 1}`,
@@ -164,7 +221,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const removeModule = (id: number) => {
-    setModules(modules.filter(m => m.id !== id));
+    setAllModules(allModules.filter(m => m.id !== id));
     setAssessments(assessments.filter(a => a.moduleId !== id));
   };
 
@@ -180,10 +237,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{ 
       programme, 
+      programmes,
       programmePlos,
       modules, 
       assessments, 
       setProgramme, 
+      addProgramme,
+      selectProgramme,
+      deleteProgramme,
       addModule, 
       updateModuleMLOCount,
       removeModule, 
